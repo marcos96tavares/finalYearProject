@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface VideosRepositor extends JpaRepository<VideoResource,Long> {
+public interface VideoRepository extends JpaRepository<VideoResource,Long> {
 
 
 }

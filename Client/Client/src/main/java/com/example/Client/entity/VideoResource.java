@@ -5,16 +5,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Duration;
 import java.util.Timer;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Entity
 
 public class VideoResource {
@@ -24,4 +22,9 @@ public class VideoResource {
     private Long videoId;
     private String videoTitle;
     private String videoUrl;
+
+
+
+
+
 }

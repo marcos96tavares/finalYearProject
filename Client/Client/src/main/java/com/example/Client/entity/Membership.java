@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 enum  Status{
@@ -23,8 +24,14 @@ public class Membership {
     private Long membershipId;
     private final int FEE = 120;
 
+
     @OneToOne
     private User userId;
     @OneToOne
     private Payment paymentId;
+
+    @Enumerated(EnumType.STRING)
+    private Status paymentStatus;
+
+
 }
