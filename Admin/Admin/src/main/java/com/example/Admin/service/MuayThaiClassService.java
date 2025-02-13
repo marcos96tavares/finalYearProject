@@ -13,8 +13,11 @@ public interface MuayThaiClassService {
 
     void deleteMuaythaiClass(Long muaythaiClassId);
 
+    MuayThaiClass getTheClassById(Long id);
+
 
     List<MuayThaiClassDto> getListOfMuaythaiclasses();
+
 
 
 

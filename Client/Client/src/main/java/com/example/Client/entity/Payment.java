@@ -41,4 +41,68 @@ public class Payment {
         SimpleDateFormat formatter = new SimpleDateFormat("MM/yy");
         this.paymentDate = formatter.parse(formattedDate);
     }
+
+    public Long getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(Long paymentId) {
+        this.paymentId = paymentId;
+    }
+
+    public long getPaymentCardNumber() {
+        return paymentCardNumber;
+    }
+
+    public void setPaymentCardNumber(long paymentCardNumber) {
+        this.paymentCardNumber = paymentCardNumber;
+    }
+
+    public Date getPaymentExpiredDate() {
+        return paymentExpiredDate;
+    }
+
+    public void setPaymentExpiredDate(Date paymentExpiredDate) {
+        this.paymentExpiredDate = paymentExpiredDate;
+    }
+
+    public int getPaymentCvv() {
+        return paymentCvv;
+    }
+
+    public void setPaymentCvv(int paymentCvv) {
+        this.paymentCvv = paymentCvv;
+    }
+
+    public String getPaymentName() {
+        return paymentName;
+    }
+
+    public void setPaymentName(String paymentName) {
+        this.paymentName = paymentName;
+    }
+
+    public String getPaymentAddress() {
+        return paymentAddress;
+    }
+
+    public void setPaymentAddress(String paymentAddress) {
+        this.paymentAddress = paymentAddress;
+    }
+
+    public Date getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(Date paymentDate) {
+        this.paymentDate = paymentDate;
+    }
+
+    public double getPaymentAmount() {
+        return paymentAmount;
+    }
+
+    public void setPaymentAmount(double paymentAmount) {
+        this.paymentAmount = paymentAmount;
+    }
 }

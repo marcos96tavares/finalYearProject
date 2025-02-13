@@ -15,8 +15,7 @@ public class MuayThaiClassTracker {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long classManagerId;
 
-    @Enumerated(EnumType.STRING)
-    private ClassStatus classStatus;  // Now properly defined
+
 
     private int numberPeopleAttendedClass;
     private int numberPeopleOnWaitList;
@@ -34,13 +33,8 @@ public class MuayThaiClassTracker {
         this.classManagerId = classManagerId;
     }
 
-    public ClassStatus getClassStatus() {
-        return classStatus;
-    }
 
-    public void setClassStatus(ClassStatus classStatus) {
-        this.classStatus = classStatus;
-    }
+
 
     public int getNumberPeopleAttendedClass() {
         return numberPeopleAttendedClass;

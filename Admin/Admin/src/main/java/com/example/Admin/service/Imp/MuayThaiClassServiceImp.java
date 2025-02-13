@@ -67,6 +67,11 @@ public class MuayThaiClassServiceImp implements MuayThaiClassService {
     }
 
     @Override
+    public MuayThaiClass getTheClassById(Long id) {
+        return muayThaiClassRepository.findById(id).orElseThrow();
+    }
+
+    @Override
     public List<MuayThaiClassDto> getListOfMuaythaiclasses() {
 
         return muayThaiClassRepository.findAll()
@@ -78,7 +83,7 @@ public class MuayThaiClassServiceImp implements MuayThaiClassService {
     }
 
 
-    private MuayThaiClass dtoToMuayThaiClass(MuayThaiClassDto muayThaiClassDto) {
+    protected MuayThaiClass dtoToMuayThaiClass(MuayThaiClassDto muayThaiClassDto) {
 
         MuayThaiClass muayThaiClass = new MuayThaiClass();
         muayThaiClass.setClassName(muayThaiClassDto.getClassNameDto());
@@ -91,7 +96,7 @@ public class MuayThaiClassServiceImp implements MuayThaiClassService {
         return muayThaiClass;
     }
 
-    private MuayThaiClassDto muayThaiClassToDto(MuayThaiClass muayThaiClass) {
+    protected MuayThaiClassDto muayThaiClassToDto(MuayThaiClass muayThaiClass) {
 
         MuayThaiClassDto muayThaiClassDto = new MuayThaiClassDto();
         muayThaiClassDto.setClassIdDto(muayThaiClass.getClassId());

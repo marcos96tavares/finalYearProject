@@ -1,16 +1,9 @@
 package com.example.Admin.dto;
 
 
-import com.example.Admin.entity.ClassStatus;
 import com.example.Admin.entity.MuayThaiClass;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-
-
 
 
 @AllArgsConstructor
@@ -21,7 +14,7 @@ public class MuayThaiClassTrackerDto {
 
 
     private Long classTrackerIdDto;
-    private ClassStatus classStatusDto;  // Now properly defined
+
 
     private int numberPeopleAttendedClassDto;
     private int numberPeopleOnWaitListDto;
@@ -39,13 +32,7 @@ public class MuayThaiClassTrackerDto {
         this.classTrackerIdDto = classTrackerIdDto;
     }
 
-    public ClassStatus getClassStatusDto() {
-        return classStatusDto;
-    }
 
-    public void setClassStatusDto(ClassStatus classStatusDto) {
-        this.classStatusDto = classStatusDto;
-    }
 
     public int getNumberPeopleAttendedClassDto() {
         return numberPeopleAttendedClassDto;

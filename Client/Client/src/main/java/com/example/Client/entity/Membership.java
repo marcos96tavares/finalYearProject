@@ -8,14 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
-enum  Status{
-    PAID,
-    NOT_PAID,
-}
-
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+
 @Entity
 public class Membership {
 
@@ -34,4 +29,39 @@ public class Membership {
     private Status paymentStatus;
 
 
+    public Long getMembershipId() {
+        return membershipId;
+    }
+
+    public void setMembershipId(Long membershipId) {
+        this.membershipId = membershipId;
+    }
+
+    public int getFEE() {
+        return FEE;
+    }
+
+    public User getUserId() {
+        return userId;
+    }
+
+    public void setUserId(User userId) {
+        this.userId = userId;
+    }
+
+    public Payment getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(Payment paymentId) {
+        this.paymentId = paymentId;
+    }
+
+    public Status getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(Status paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
 }
