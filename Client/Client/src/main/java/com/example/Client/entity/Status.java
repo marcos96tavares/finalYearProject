@@ -1,6 +1,6 @@
 package com.example.Client.entity;
 
-enum Status {
+public enum Status {
     PAID,
     NOT_PAID,
 }
