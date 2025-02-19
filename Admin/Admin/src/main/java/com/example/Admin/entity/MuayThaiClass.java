@@ -1,5 +1,7 @@
 package com.example.Admin.entity;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -22,8 +24,7 @@ public class MuayThaiClass {
     private String className;
     private LocalTime classTimeStart;  // Represents class time (e.g., 14:00)
     private LocalTime classTimeEnd;
-    @Enumerated(EnumType.STRING)
-    private WeekDays weekDays;
+    private DayOfWeek weekDays;
 
     private int classCapacity;
 
@@ -62,11 +63,11 @@ public class MuayThaiClass {
         this.classTimeEnd = classTimeEnd;
     }
 
-    public WeekDays getWeekDays() {
+    public DayOfWeek getWeekDays() {
         return weekDays;
     }
 
-    public void setWeekDays(WeekDays weekDays) {
+    public void setWeekDays(DayOfWeek weekDays) {
         this.weekDays = weekDays;
     }
 

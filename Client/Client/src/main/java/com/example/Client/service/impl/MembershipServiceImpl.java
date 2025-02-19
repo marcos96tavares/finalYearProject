@@ -31,7 +31,18 @@ public class MembershipServiceImpl implements MembershipService {
 
     @Override
     public MembershipDto createMembership(MembershipDto membershipDto) {
+
+        User user = membershipDto.getUserId();
+        Payment payment = membershipDto.getPaymentId();
+
+        userRepository.save(user);
+        paymentRepository.save(payment);
+
+        membershipDto.setUserId(user);
+        membershipDto.setPaymentId(payment);
+
         Membership membership = convertToEntity(membershipDto);
+
         return convertToDto(membershipRepository.save(membership));
     }
 
@@ -79,15 +90,8 @@ public class MembershipServiceImpl implements MembershipService {
     private Membership convertToEntity(MembershipDto dto) {
         Membership membership = new Membership();
         membership.setPaymentStatus(dto.getPaymentStatus());
-
-        if (dto.getUserId() != null) {
-            membership.setUserId(dto.getUserId());
-        }
-
-        if (dto.getPaymentId() != null) {
-            membership.setPaymentId(dto.getPaymentId());
-        }
-
+        membership.setUserId(dto.getUserId());
+        membership.setPaymentId(dto.getPaymentId());
         return membership;
     }
     private MembershipDto convertToDto(Membership membership) {

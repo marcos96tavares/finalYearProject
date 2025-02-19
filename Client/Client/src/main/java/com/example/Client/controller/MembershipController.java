@@ -2,6 +2,7 @@ package com.example.Client.controller;
 
 
 import com.example.Client.dto.MembershipDto;
+import com.example.Client.entity.Membership;
 import com.example.Client.service.MembershipService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,8 @@ public class MembershipController {
 
     @PostMapping
     public MembershipDto createMembership(@RequestBody MembershipDto membershipDto) {
-        return membershipService.createMembership(membershipDto);
+        MembershipDto membership = membershipService.createMembership(membershipDto);
+        return membership;
     }
 
     @PutMapping("/{id}")

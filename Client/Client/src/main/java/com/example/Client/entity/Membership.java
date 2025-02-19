@@ -17,9 +17,6 @@ public class Membership {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long membershipId;
-    private final int FEE = 120;
-
-
     @OneToOne
     private User userId;
     @OneToOne
@@ -37,9 +34,7 @@ public class Membership {
         this.membershipId = membershipId;
     }
 
-    public int getFEE() {
-        return FEE;
-    }
+
 
     public User getUserId() {
         return userId;

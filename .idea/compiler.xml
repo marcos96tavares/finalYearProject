@@ -15,6 +15,10 @@
         <module name="ChatBoat" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Api-Gateway" target="21" />
+      <module name="Service-Register" target="21" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
