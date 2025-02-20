@@ -2,6 +2,7 @@ package com.example.Admin.controller;
 
 
 import com.example.Admin.dto.MuayThaiClassTrackerDto;
+import com.example.Admin.service.Imp.EventGenerationService;
 import com.example.Admin.service.MuayThaiClassTrackerService;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,9 +13,11 @@ import java.util.List;
 public class MuayThaiClassServiceController {
 
     private final MuayThaiClassTrackerService trackerService;
+    private final EventGenerationService eventGenerationService;
 
-    public MuayThaiClassServiceController(MuayThaiClassTrackerService trackerService) {
+    public MuayThaiClassServiceController(MuayThaiClassTrackerService trackerService, EventGenerationService eventGenerationService) {
         this.trackerService = trackerService;
+        this.eventGenerationService = eventGenerationService;
     }
 
     @PostMapping("/{classId}")
@@ -22,10 +25,6 @@ public class MuayThaiClassServiceController {
         return trackerService.createClassTracker(dto, classId);
     }
 
-    @PutMapping("/{classId}")
-    public MuayThaiClassTrackerDto update(@PathVariable Long classId, @RequestBody MuayThaiClassTrackerDto dto) {
-        return trackerService.updateClassTracker(classId, dto);
-    }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
@@ -35,6 +34,13 @@ public class MuayThaiClassServiceController {
     @GetMapping("/{id}")
     public MuayThaiClassTrackerDto getById(@PathVariable Long id) {
         return trackerService.getClassTrackerById(id);
+    }
+
+    @GetMapping( "/generate-next-class-tracker")
+    public String generateNextClassTracker() {
+
+        eventGenerationService.generateEvents();
+        return "Event Generated";
     }
 
     @GetMapping

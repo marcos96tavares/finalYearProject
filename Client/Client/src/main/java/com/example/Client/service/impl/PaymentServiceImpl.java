@@ -15,18 +15,40 @@ import java.util.stream.Collectors;
 
 public class PaymentServiceImpl implements PaymentService {
 
+    /**
+     * Repository interface for performing CRUD operations on Payment entities.
+     * Provides database access for managing payment information.
+     */
     private final PaymentRepository paymentRepository;
 
+    /**
+     * Constructs a new instance of PaymentServiceImpl.
+     *
+     * @param paymentRepository the PaymentRepository instance used for accessing payment data
+     */
     public PaymentServiceImpl(PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
     }
 
+    /**
+     * Creates a new payment entry in the system, saving it to the repository.
+     *
+     * @param paymentDto The data transfer object containing payment details to be created.
+     * @return A PaymentDto representing the newly created payment after being saved in the repository.
+     */
     @Override
     public PaymentDto createPayment(PaymentDto paymentDto) {
         Payment payment = convertToEntity(paymentDto);
         return convertToDto(paymentRepository.save(payment));
     }
 
+    /**
+     * Updates an existing payment with new details.
+     *
+     * @param id the ID of the payment to be updated
+     * @param paymentDto the new payment information to be updated in the record
+     * @return the updated payment information as a PaymentDto
+     */
     @Override
     public PaymentDto updatePayment(Long id, PaymentDto paymentDto) {
         Payment payment = paymentRepository.findById(id)
@@ -42,11 +64,23 @@ public class PaymentServiceImpl implements PaymentService {
         return convertToDto(paymentRepository.save(payment));
     }
 
+    /**
+     * Deletes a payment record from the repository by its ID.
+     *
+     * @param id the unique identifier of the payment to be deleted
+     */
     @Override
     public void deletePayment(Long id) {
         paymentRepository.deleteById(id);
     }
 
+    /**
+     * Retrieves a payment by its unique identifier.
+     *
+     * @param id the unique identifier of the payment
+     * @return the payment details as a PaymentDto object
+     * @throws RuntimeException if no payment is found with the given identifier
+     */
     @Override
     public PaymentDto getPaymentById(Long id) {
         Payment payment = paymentRepository.findById(id)
@@ -54,12 +88,21 @@ public class PaymentServiceImpl implements PaymentService {
         return convertToDto(payment);
     }
 
+    /**
+     *
+     */
     @Override
     public List<PaymentDto> getAllPayments() {
         return paymentRepository.findAll().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
+    /**
+     * Converts a PaymentDto object into a Payment entity.
+     *
+     * @param dto the PaymentDto object containing payment details
+     * @return a Payment entity populated with the data from the provided PaymentDto
+     */
     private Payment convertToEntity(PaymentDto dto) {
         Payment payment = new Payment();
         payment.setPaymentCardNumber(dto.getPaymentCardNumberDto());
@@ -71,6 +114,12 @@ public class PaymentServiceImpl implements PaymentService {
         return payment;
     }
 
+    /**
+     * Converts a Payment entity to a PaymentDto object.
+     *
+     * @param payment the Payment entity to be converted
+     * @return the converted PaymentDto object
+     */
     private PaymentDto convertToDto(Payment payment) {
         return new PaymentDto(
                 payment.getPaymentId(),
