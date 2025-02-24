@@ -20,7 +20,7 @@ public class MuayThaiClassTrackerDto {
     private int numberPeopleAttendedClassDto;
     private int numberPeopleOnWaitListDto;
     private int numberPeopleDidNotAttendClassDto; // Corrected naming
-    private MuayThaiClass muayThaiClassDto;
+    private MuayThaiClassDto muayThaiClassDto;
 
 
 }

@@ -1,5 +1,6 @@
 package com.example.Admin.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jdk.jfr.Enabled;
@@ -45,6 +46,7 @@ public class MuayThaiBooking {
      */
     @ManyToOne
     @JoinColumn(name = "tracker_id", nullable = false)
+    @JsonBackReference
     private MuayThaiClassTracker muayThaiClassTracker;
 
 }

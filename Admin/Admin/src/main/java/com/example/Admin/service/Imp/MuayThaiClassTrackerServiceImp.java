@@ -6,9 +6,12 @@ import com.example.Admin.entity.MuayThaiClassTracker;
 import com.example.Admin.repository.MuayThaiClassRepository;
 import com.example.Admin.repository.MuayThaiClassTrackerRepository;
 import com.example.Admin.service.MuayThaiClassTrackerService;
+import org.apache.logging.log4j.util.PropertySource;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.DayOfWeek;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerService {
@@ -28,6 +31,8 @@ public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerServi
      * Muay Thai class-specific operations.
      */
     private final MuayThaiClassServiceImp muayThaiClassServiceImp;
+
+
 
     /**
      * Constructs an instance of MuayThaiClassTrackerServiceImp.
@@ -72,18 +77,18 @@ public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerServi
      * Adds an attendee to the specified Muay Thai class tracker if the class has available capacity.
      * If the class is full, the attendee is added to the waitlist.
      *
-     * @param trackerDto the data transfer object representing the tracker to be updated
+     * @param trackerDtoId the data transfer object representing the tracker to be updated
      * @param muayThaiClassId the ID of the Muay Thai class to which attendance is being added
      * @return the updated Muay Thai class tracker as a data transfer object
      * @throws RuntimeException if the class is at full capacity
      */
-    public MuayThaiClassTrackerDto addAttend(MuayThaiClassTrackerDto trackerDto, Long muayThaiClassId) {
+    public MuayThaiClassTrackerDto addAttend(Long trackerDtoId, Long muayThaiClassId) {
 
         MuayThaiClass muayThaiClass = muayThaiClassServiceImp.getTheClassById(muayThaiClassId);
-        MuayThaiClassTracker muayThaiClassTracker = trackerRepository.findById(trackerDto.getClassTrackerIdDto()).orElseThrow();
+        MuayThaiClassTracker muayThaiClassTracker = trackerRepository.findById(trackerDtoId).orElseThrow();
         int classCapacity = muayThaiClass.getClassCapacity();
 
-        if (classCapacity <= trackerDto.getNumberPeopleAttendedClassDto()) {
+        if (classCapacity <= muayThaiClassTracker.getNumberPeopleAttendedClass()) {
             muayThaiClassTracker.setNumberPeopleOnWaitList(muayThaiClassTracker.getNumberPeopleOnWaitList()+1);
             trackerRepository.save(muayThaiClassTracker);
             throw new RuntimeException("The class is full");
@@ -100,15 +105,15 @@ public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerServi
      * Adds a not attend record by incrementing the number of people who did not attend
      * a specific Muay Thai class and saving the updated tracker information.
      *
-     * @param trackerDto the data transfer object containing information about the class tracker
+     * @param trackerDtoId the data transfer object containing information about the class tracker
      * @param muayThaiClassId the unique ID of the Muay Thai class
      * @return the updated MuayThaiClassTrackerDto object after increasing the count of people
      *         who did not attend the specified class
      */
-    public MuayThaiClassTrackerDto addNotAttend(MuayThaiClassTrackerDto trackerDto, Long muayThaiClassId) {
+    public MuayThaiClassTrackerDto addNotAttend(Long trackerDtoId, Long muayThaiClassId) {
 
         MuayThaiClass muayThaiClass = muayThaiClassServiceImp.getTheClassById(muayThaiClassId);
-        MuayThaiClassTracker muayThaiClassTracker = trackerRepository.findById(trackerDto.getClassTrackerIdDto()).orElseThrow();
+        MuayThaiClassTracker muayThaiClassTracker = trackerRepository.findById(trackerDtoId).orElseThrow();
         muayThaiClassTracker.setNumberPeopleDidNotAttendClass(muayThaiClassTracker.getNumberPeopleDidNotAttendClass()+1);
         return convertToDto(trackerRepository.save(muayThaiClassTracker));
     }
@@ -149,6 +154,40 @@ public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerServi
         return trackerRepository.findAll().stream().map(this::convertToDto).toList();
     }
 
+    @Override
+    public Map<DayOfWeek, List<MuayThaiClassTrackerDto>> getClassListTrackersByDay() {
+
+        List<MuayThaiClassTracker> muayThaiClassTrackers = trackerRepository.findAll();
+
+        // Sort classes by event date
+        muayThaiClassTrackers = muayThaiClassTrackers.stream()
+                .sorted(Comparator.comparing(MuayThaiClassTracker::getEventDate))
+                .toList(); // Store the sorted list
+
+        // Group classes by day of the week
+        Map<DayOfWeek, List<MuayThaiClassTracker>> map = new HashMap<>();
+
+        for (MuayThaiClassTracker tracker : muayThaiClassTrackers) {
+            DayOfWeek day = tracker.getMuayThaiClass().getWeekDays();
+
+            // Add tracker to the existing list or create a new one
+            map.computeIfAbsent(day, k -> new ArrayList<>()).add(tracker);
+        }
+
+        // Convert values to DTOs
+        return map.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey, // Keep the same DayOfWeek key
+                        entry -> entry.getValue().stream()
+                                .sorted(Comparator.comparing(t -> t.getMuayThaiClass().getClassTimeStart())) // Sort by class start time
+                                .map(this::convertToDto) // Convert to DTO
+                                .toList()
+                ));
+    }
+
+
+
+
 
 
     /**
@@ -157,14 +196,14 @@ public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerServi
      * @param tracker the MuayThaiClassTracker instance to be converted
      * @return a MuayThaiClassTrackerDto object containing the converted data
      */
-    private MuayThaiClassTrackerDto convertToDto(MuayThaiClassTracker tracker) {
+    public MuayThaiClassTrackerDto convertToDto(MuayThaiClassTracker tracker) {
         MuayThaiClassTrackerDto dto = new MuayThaiClassTrackerDto();
         dto.setClassTrackerIdDto(tracker.getClassManagerId());
 
         dto.setNumberPeopleAttendedClassDto(tracker.getNumberPeopleAttendedClass());
         dto.setNumberPeopleOnWaitListDto(tracker.getNumberPeopleOnWaitList());
         dto.setNumberPeopleDidNotAttendClassDto(tracker.getNumberPeopleDidNotAttendClass());
-        dto.setMuayThaiClassDto(tracker.getMuayThaiClass());
+        dto.setMuayThaiClassDto(muayThaiClassServiceImp.muayThaiClassToDto(tracker.getMuayThaiClass()));
         return dto;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.Admin.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -98,6 +99,7 @@ public class MuayThaiClassTracker {
      * {@code MuayThaiBooking} class, ensuring bidirectional mapping between the entities.
      */
     @OneToMany(mappedBy = "muayThaiClassTracker", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<MuayThaiBooking> bookings;
 
 }

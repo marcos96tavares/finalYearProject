@@ -74,7 +74,7 @@ public class MuayThaiClass {
      * potential circular references during JSON conversion.
      */
     @OneToMany(mappedBy = "muayThaiClass", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+  @JsonManagedReference
     private List<MuayThaiClassTracker> muayThaiManagers;
 
 

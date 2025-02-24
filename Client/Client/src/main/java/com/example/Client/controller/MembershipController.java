@@ -46,4 +46,10 @@ public class MembershipController {
         return membershipService.getAllMemberships();
     }
 
+
+
+    @GetMapping("/getUserSize")
+    public Integer getUserSize() {
+        return membershipService.getAllMemberships().size();
+    }
 }

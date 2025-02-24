@@ -4,9 +4,13 @@ package com.example.Admin.controller;
 import com.example.Admin.dto.MuayThaiClassTrackerDto;
 import com.example.Admin.service.Imp.EventGenerationService;
 import com.example.Admin.service.MuayThaiClassTrackerService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/muaythai/class-tracker")
@@ -43,9 +47,26 @@ public class MuayThaiClassServiceController {
         return "Event Generated";
     }
 
+    @GetMapping( "/data")
+    public void generateNextBankHolidays() {
+
+        eventGenerationService.getBankHolidayDays();
+
+    }
+
     @GetMapping
     public List<MuayThaiClassTrackerDto> getAll() {
         return trackerService.getAllClassTrackers();
+    }
+
+
+
+    @GetMapping("/get-all-Tracker")
+    public ResponseEntity< Map<DayOfWeek,List <MuayThaiClassTrackerDto>>> getAllTrackers() {
+
+        Map<DayOfWeek, List<MuayThaiClassTrackerDto>> map = trackerService.getClassListTrackersByDay();
+
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
 }

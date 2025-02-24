@@ -7,6 +7,7 @@ import com.example.Admin.service.MemberData;
 import com.example.Admin.service.MuayThaiClassService;
 import com.example.Admin.service.MuayThaiClassTrackerService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.Map;
@@ -25,11 +26,15 @@ public class ClassReportService implements MemberData {
 
    private final MuayThaiClassTrackerService muayThaiClassTrackerService;
     private  final MuayThaiClassService muayThaiClassService;
+    private final WebClient webClient;
 
-    public ClassReportService(MuayThaiClassTrackerService muayThaiClassTrackerService, MuayThaiClassService muayThaiClassService) {
+    public ClassReportService(MuayThaiClassTrackerService muayThaiClassTrackerService, MuayThaiClassService muayThaiClassService, WebClient webClient) {
         this.muayThaiClassTrackerService = muayThaiClassTrackerService;
         this.muayThaiClassService = muayThaiClassService;
+        this.webClient = webClient;
     }
+
+
 
     /**
      * Calculates and returns the total number of members.
@@ -38,7 +43,16 @@ public class ClassReportService implements MemberData {
      */
     @Override
     public int totalOfMembers() {
-        return 0;
+
+        int size = webClient.get()
+                .uri("http://localhost:8081/memberships/getUserSize")
+                .retrieve()
+                .bodyToMono(Integer.class)
+                .blockOptional() // Wrap in Optional
+                .orElse(0);
+
+
+        return size;
     }
 
     /**
@@ -88,7 +102,7 @@ public class ClassReportService implements MemberData {
         return muayThaiClassTrackerService.getAllClassTrackers()
                 .stream()
                 .sorted((a, b) -> Integer.compare(b.getNumberPeopleAttendedClassDto(), a.getNumberPeopleAttendedClassDto()))
-                .map(tracker -> tracker.getMuayThaiClassDto().getClassName())
+                .map(tracker -> tracker.getMuayThaiClassDto().getClassNameDto())
                 .toList();
     }
 
@@ -108,7 +122,7 @@ public class ClassReportService implements MemberData {
         return muayThaiClassTrackerService.getAllClassTrackers()
                 .stream()
                 .collect(Collectors.toMap(
-                        tracker -> tracker.getMuayThaiClassDto().getClassName(),
+                        tracker -> tracker.getMuayThaiClassDto().getClassNameDto(),
                         MuayThaiClassTrackerDto::getNumberPeopleAttendedClassDto,
                         Integer::sum
                 ));
