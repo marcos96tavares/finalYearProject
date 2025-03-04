@@ -11,4 +11,5 @@ public interface MembershipService {
     void deleteMembership(Long id);
     MembershipDto getMembershipById(Long id);
     List<MembershipDto> getAllMemberships();
+    MembershipDto getMembershipByUserId(Long UserId);
 }

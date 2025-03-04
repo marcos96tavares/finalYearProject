@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/muay-thai/bookings")
+@RequestMapping("/api/booking")
 public class MuayThaiBookingController {
 
     private final MuayThaiBookingService bookingService;

@@ -3,6 +3,7 @@ package com.example.Admin.service.Imp;
 import com.example.Admin.dto.MuayThaiClassTrackerDto;
 import com.example.Admin.entity.MuayThaiClass;
 import com.example.Admin.entity.MuayThaiClassTracker;
+import com.example.Admin.exception.ResourceNotFoundException;
 import com.example.Admin.repository.MuayThaiClassRepository;
 import com.example.Admin.repository.MuayThaiClassTrackerRepository;
 import com.example.Admin.service.MuayThaiClassTrackerService;
@@ -85,7 +86,7 @@ public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerServi
     public MuayThaiClassTrackerDto addAttend(Long trackerDtoId, Long muayThaiClassId) {
 
         MuayThaiClass muayThaiClass = muayThaiClassServiceImp.getTheClassById(muayThaiClassId);
-        MuayThaiClassTracker muayThaiClassTracker = trackerRepository.findById(trackerDtoId).orElseThrow();
+        MuayThaiClassTracker muayThaiClassTracker = trackerRepository.findById(trackerDtoId).orElseThrow(()->new ResourceNotFoundException("muaythai", "id", muayThaiClassId));
         int classCapacity = muayThaiClass.getClassCapacity();
 
         if (classCapacity <= muayThaiClassTracker.getNumberPeopleAttendedClass()) {
@@ -106,15 +107,15 @@ public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerServi
      * a specific Muay Thai class and saving the updated tracker information.
      *
      * @param trackerDtoId the data transfer object containing information about the class tracker
-     * @param muayThaiClassId the unique ID of the Muay Thai class
      * @return the updated MuayThaiClassTrackerDto object after increasing the count of people
      *         who did not attend the specified class
      */
-    public MuayThaiClassTrackerDto addNotAttend(Long trackerDtoId, Long muayThaiClassId) {
+    public MuayThaiClassTrackerDto addNotAttend(Long trackerDtoId ) {
 
-        MuayThaiClass muayThaiClass = muayThaiClassServiceImp.getTheClassById(muayThaiClassId);
-        MuayThaiClassTracker muayThaiClassTracker = trackerRepository.findById(trackerDtoId).orElseThrow();
+
+        MuayThaiClassTracker muayThaiClassTracker = trackerRepository.findById(trackerDtoId).orElseThrow(()->new ResourceNotFoundException("MauyThai", "id", trackerDtoId));
         muayThaiClassTracker.setNumberPeopleDidNotAttendClass(muayThaiClassTracker.getNumberPeopleDidNotAttendClass()+1);
+        muayThaiClassTracker.setNumberPeopleAttendedClass(muayThaiClassTracker.getNumberPeopleAttendedClass()-1);
         return convertToDto(trackerRepository.save(muayThaiClassTracker));
     }
 
@@ -206,4 +207,24 @@ public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerServi
         dto.setMuayThaiClassDto(muayThaiClassServiceImp.muayThaiClassToDto(tracker.getMuayThaiClass()));
         return dto;
     }
+
+    public MuayThaiClassTracker convertToEntity(MuayThaiClassTrackerDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        MuayThaiClassTracker tracker = new MuayThaiClassTracker();
+        tracker.setClassManagerId(dto.getClassTrackerIdDto());
+        tracker.setNumberPeopleAttendedClass(dto.getNumberPeopleAttendedClassDto());
+        tracker.setNumberPeopleOnWaitList(dto.getNumberPeopleOnWaitListDto());
+        tracker.setNumberPeopleDidNotAttendClass(dto.getNumberPeopleDidNotAttendClassDto());
+
+        if (dto.getMuayThaiClassDto() != null) {
+            tracker.setMuayThaiClass(muayThaiClassServiceImp.dtoToMuayThaiClass(dto.getMuayThaiClassDto()));
+        }
+
+        return tracker;
+    }
+
+
 }

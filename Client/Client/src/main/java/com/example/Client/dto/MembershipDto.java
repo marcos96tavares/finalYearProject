@@ -7,54 +7,26 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class MembershipDto {
 
 
     private Long membershipId;
 
-    private User userId;
+    private UserDto userId;
 
-    private Payment paymentId;
+    private PaymentDto paymentId;
 
 
     private Status paymentStatus;
 
 
-    public Long getMembershipId() {
-        return membershipId;
-    }
 
-    public void setMembershipId(Long membershipId) {
-        this.membershipId = membershipId;
-    }
-
-
-
-    public User getUserId() {
-        return userId;
-    }
-
-    public void setUserId(User userId) {
-        this.userId = userId;
-    }
-
-    public Payment getPaymentId() {
-        return paymentId;
-    }
-
-    public void setPaymentId(Payment paymentId) {
-        this.paymentId = paymentId;
-    }
-
-    public Status getPaymentStatus() {
-        return paymentStatus;
-    }
-
-    public void setPaymentStatus(Status paymentStatus) {
-        this.paymentStatus = paymentStatus;
-    }
 }

@@ -2,6 +2,8 @@ package com.example.Admin.service.Imp;
 
 import com.example.Admin.dto.MuayThaiClassDto;
 import com.example.Admin.entity.MuayThaiClass;
+import com.example.Admin.exception.ClassAlreadyExisteException;
+import com.example.Admin.exception.ResourceNotFoundException;
 import com.example.Admin.repository.MuayThaiClassRepository;
 import com.example.Admin.service.MuayThaiClassService;
 import org.springframework.stereotype.Service;
@@ -56,7 +58,8 @@ public class MuayThaiClassServiceImp implements MuayThaiClassService {
             muayThaiClassRepository.save(muayThaiClass);
 
         }else {
-            System.out.println("You can not create this Class!");
+            throw new ClassAlreadyExisteException("Muay Thai Class Already Exists");
+
         }
 
         // return the value
@@ -76,7 +79,9 @@ public class MuayThaiClassServiceImp implements MuayThaiClassService {
 
         Long getTheId = muayThaiClassDto.getClassIdDto();
 
-        MuayThaiClass muayThaiClass = muayThaiClassRepository.findById(getTheId).orElseThrow();
+        MuayThaiClass muayThaiClass = muayThaiClassRepository.findById(getTheId).orElseThrow(
+                () -> new ResourceNotFoundException("Muaythai", "id", getTheId)
+        );
 
         return muayThaiClassToDto(muayThaiClass);
     }
@@ -107,7 +112,7 @@ public class MuayThaiClassServiceImp implements MuayThaiClassService {
      */
     @Override
     public MuayThaiClass getTheClassById(Long id) {
-        return muayThaiClassRepository.findById(id).orElseThrow();
+        return muayThaiClassRepository.findById(id).orElseThrow( () -> new ResourceNotFoundException("Muaythai", "id", id));
     }
 
     /**

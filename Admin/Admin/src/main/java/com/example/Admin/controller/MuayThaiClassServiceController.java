@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/muaythai/class-tracker")
+@RequestMapping("/api/class-tracker")
 public class MuayThaiClassServiceController {
 
     private final MuayThaiClassTrackerService trackerService;

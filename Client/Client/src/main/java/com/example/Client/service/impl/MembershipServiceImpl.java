@@ -1,14 +1,18 @@
 package com.example.Client.service.impl;
 
 import com.example.Client.dto.MembershipDto;
+import com.example.Client.dto.PaymentDto;
+import com.example.Client.dto.UserDto;
 import com.example.Client.entity.Membership;
 import com.example.Client.entity.Payment;
 import com.example.Client.entity.User;
+import com.example.Client.exception.EmailAlreadyExistsException;
+import com.example.Client.exception.ResourceNotFoundException;
 import com.example.Client.repository.MembershipRepository;
 import com.example.Client.repository.PaymentRepository;
 import com.example.Client.repository.UserRepository;
 import com.example.Client.service.MembershipService;
-import lombok.RequiredArgsConstructor;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +29,11 @@ public class MembershipServiceImpl implements MembershipService {
      * Acts as the communication layer between the application and the database for Membership entities.
      */
     private final MembershipRepository membershipRepository;
+
+
+
+    private final PaymentServiceImpl paymentService;
+    private final UserServiceImp userService;
     /**
      * A reference to the {@link UserRepository} which provides data access operations
      * for {@link User} entities. This repository is used to interact with the persistence
@@ -44,8 +53,11 @@ public class MembershipServiceImpl implements MembershipService {
      * @param userRepository the repository for managing User entities
      * @param paymentRepository the repository for managing Payment entities
      */
-    public MembershipServiceImpl(MembershipRepository membershipRepository, UserRepository userRepository, PaymentRepository paymentRepository) {
+    public MembershipServiceImpl(MembershipRepository membershipRepository, PaymentServiceImpl paymentService, UserServiceImp userService, UserRepository userRepository, PaymentRepository paymentRepository) {
         this.membershipRepository = membershipRepository;
+
+        this.paymentService = paymentService;
+        this.userService = userService;
         this.userRepository = userRepository;
         this.paymentRepository = paymentRepository;
     }
@@ -57,17 +69,18 @@ public class MembershipServiceImpl implements MembershipService {
      * @param membershipDto the MembershipDto object containing user, payment, and membership details.
      * @return the created MembershipDto representing the newly saved membership entity.
      */
+    @Transactional
     @Override
     public MembershipDto createMembership(MembershipDto membershipDto) {
 
-        User user = membershipDto.getUserId();
-        Payment payment = membershipDto.getPaymentId();
+       if (userRepository.existsByEmail(membershipDto.getUserId().getEmailDto())){
+           throw new EmailAlreadyExistsException("Email already exists");
+       }
+        UserDto userDto = userService.createUser(membershipDto.getUserId());
+        PaymentDto paymentDto = paymentService.createPayment(membershipDto.getPaymentId());
 
-        userRepository.save(user);
-        paymentRepository.save(payment);
-
-        membershipDto.setUserId(user);
-        membershipDto.setPaymentId(payment);
+        membershipDto.setUserId(userDto);
+        membershipDto.setPaymentId(paymentDto);
 
         Membership membership = convertToEntity(membershipDto);
 
@@ -88,19 +101,19 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public MembershipDto updateMembership(Long id, MembershipDto membershipDto) {
         Membership membership = membershipRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Membership not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Membership", "id", id));
 
         membership.setPaymentStatus(membershipDto.getPaymentStatus());
 
         if (membershipDto.getUserId() != null) {
-            User user = userRepository.findById(membershipDto.getUserId().getUserId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+            User user = userRepository.findById(membershipDto.getUserId().getUserDtoId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", membershipDto.getUserId().getUserDtoId()));
             membership.setUserId(user);
         }
 
         if (membershipDto.getPaymentId() != null) {
-            Payment payment = paymentRepository.findById(membershipDto.getPaymentId().getPaymentId())
-                    .orElseThrow(() -> new RuntimeException("Payment not found"));
+            Payment payment = paymentRepository.findById(membershipDto.getPaymentId().getPaymentIdDo())
+                    .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", membershipDto.getPaymentId().getPaymentIdDo()));
             membership.setPaymentId(payment);
         }
 
@@ -143,6 +156,15 @@ public class MembershipServiceImpl implements MembershipService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public MembershipDto getMembershipByUserId(Long UserId) {
+
+        User user = userRepository.findById(UserId).orElseThrow((() -> new ResourceNotFoundException("User", "id", UserId)));
+        Membership membership = membershipRepository.findMembershipByUserId(user);
+        return convertToDto(membership);
+
+    }
+
     /**
      * Converts a MembershipDto object to a Membership entity.
      *
@@ -152,8 +174,8 @@ public class MembershipServiceImpl implements MembershipService {
     private Membership convertToEntity(MembershipDto dto) {
         Membership membership = new Membership();
         membership.setPaymentStatus(dto.getPaymentStatus());
-        membership.setUserId(dto.getUserId());
-        membership.setPaymentId(dto.getPaymentId());
+        membership.setUserId(userService.convertToEntity(dto.getUserId()));
+        membership.setPaymentId(paymentService.convertToEntity(dto.getPaymentId()));
         return membership;
     }
     /**
@@ -165,8 +187,8 @@ public class MembershipServiceImpl implements MembershipService {
     private MembershipDto convertToDto(Membership membership) {
         return new MembershipDto(
                 membership.getMembershipId(),
-                membership.getUserId(),
-                membership.getPaymentId(),
+                userService.convertToDto(membership.getUserId()),
+                paymentService.convertToDto(membership.getPaymentId()),
                 membership.getPaymentStatus()
         );
     }

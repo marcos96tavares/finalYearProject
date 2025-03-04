@@ -2,8 +2,10 @@ package com.example.Client.service.impl;
 
 import com.example.Client.dto.UserDto;
 import com.example.Client.entity.User;
+import com.example.Client.exception.ResourceNotFoundException;
 import com.example.Client.repository.UserRepository;
 import com.example.Client.service.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,14 +20,16 @@ public class UserServiceImp implements UserService {
      * on the User entity in the database.
      */
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Constructs a new instance of UserServiceImp with the specified UserRepository.
      *
      * @param userRepository the repository used to perform data operations for users
      */
-    public UserServiceImp(UserRepository userRepository) {
+    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -54,7 +58,7 @@ public class UserServiceImp implements UserService {
     public UserDto updateUser(Long id, UserDto userDto) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 
         user.setFirstName(userDto.getFirstNameDto());
         user.setLastName(userDto.getLastNameDto());
@@ -83,7 +87,7 @@ public class UserServiceImp implements UserService {
     @Override
     public UserDto getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
         return convertToDto(user);
     }
 
@@ -106,11 +110,12 @@ public class UserServiceImp implements UserService {
      * @param userDto the UserDto object to be converted
      * @return the corresponding User entity
      */
-    private User convertToEntity(UserDto userDto) {
+    public User convertToEntity(UserDto userDto) {
         User user = new User();
         user.setFirstName(userDto.getFirstNameDto());
         user.setLastName(userDto.getLastNameDto());
         user.setEmail(userDto.getEmailDto());
+        user.setPassword(passwordEncoder.encode(userDto.getPasswordDto()));
         return user;
     }
 
@@ -121,7 +126,7 @@ public class UserServiceImp implements UserService {
      * @param user the User entity to be converted
      * @return the converted UserDto object containing the mapped data
      */
-    private UserDto convertToDto(User user) {
-        return new UserDto(user.getUserId(), user.getFirstName(), user.getLastName(), user.getEmail());
+    public UserDto convertToDto(User user) {
+        return new UserDto(user.getUserId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword());
     }
 }

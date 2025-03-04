@@ -1,8 +1,10 @@
 package com.example.Admin.service.Imp;
 
 import com.example.Admin.dto.MuayThaiBookingDto;
+import com.example.Admin.dto.MuayThaiClassTrackerDto;
 import com.example.Admin.entity.MuayThaiBooking;
 import com.example.Admin.entity.MuayThaiClassTracker;
+import com.example.Admin.exception.ResourceNotFoundException;
 import com.example.Admin.repository.MuayThaiBookRepository;
 import com.example.Admin.repository.MuayThaiClassTrackerRepository;
 import com.example.Admin.service.MuayThaiBookingService;
@@ -10,6 +12,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MuayThaiBookingImp implements MuayThaiBookingService {
@@ -28,6 +31,8 @@ public class MuayThaiBookingImp implements MuayThaiBookingService {
    */
   private final MuayThaiClassTrackerRepository muayThaiClassTrackerRepository;
 
+  private final MuayThaiClassTrackerServiceImp muayThaiClassTrackerServiceImp;
+
 
 
   /**
@@ -37,9 +42,10 @@ public class MuayThaiBookingImp implements MuayThaiBookingService {
    * @param muayThaiBookingService1 the repository used for managing Muay Thai bookings
    * @param muayThaiClassTrackerRepository the repository used for managing Muay Thai class trackers
    */
-  public MuayThaiBookingImp( MuayThaiBookRepository muayThaiBookingService1, MuayThaiClassTrackerRepository muayThaiClassTrackerRepository) {
+  public MuayThaiBookingImp(MuayThaiBookRepository muayThaiBookingService1, MuayThaiClassTrackerRepository muayThaiClassTrackerRepository, MuayThaiClassTrackerServiceImp muayThaiClassTrackerServiceImp) {
       this.muayThaiBookingService = muayThaiBookingService1;
       this.muayThaiClassTrackerRepository = muayThaiClassTrackerRepository;
+      this.muayThaiClassTrackerServiceImp = muayThaiClassTrackerServiceImp;
   }
 
 
@@ -54,8 +60,8 @@ public class MuayThaiBookingImp implements MuayThaiBookingService {
      */
     @Override
     public MuayThaiBooking createBooking(MuayThaiBookingDto bookingDto) {
-        MuayThaiClassTracker tracker = muayThaiClassTrackerRepository.findById(bookingDto.getMuayThaiClassTracker().getClassManagerId())
-                .orElseThrow(() -> new RuntimeException("Class Tracker not found"));
+        MuayThaiClassTracker tracker = muayThaiClassTrackerRepository.findById(bookingDto.getMuayThaiClassTracker().getClassTrackerIdDto())
+                .orElseThrow(() -> new ResourceNotFoundException("MuayThaiTracker" ,"id", bookingDto.getMuayThaiClassTracker().getClassTrackerIdDto()));
 
         MuayThaiBooking booking = new MuayThaiBooking();
         booking.setStudentId(bookingDto.getStudentId());
@@ -85,4 +91,44 @@ public class MuayThaiBookingImp implements MuayThaiBookingService {
     public void deleteBooking(Long bookingId) {
         muayThaiBookingService.deleteById(bookingId);
     }
+
+    @Override
+    public List<MuayThaiBookingDto> getBookingsByUserId(Long userId) {
+
+        List<MuayThaiBooking> muayThaiBookings =  muayThaiBookingService.findAllByStudentId(userId);
+
+        return muayThaiBookings.stream()
+                .map(this::convertToDto)
+                .toList();
+
+
+
+    }
+
+
+    public  MuayThaiBookingDto convertToDto(MuayThaiBooking booking) {
+        if (booking == null) {
+            return null;
+        }
+
+        MuayThaiBookingDto dto = new MuayThaiBookingDto();
+        dto.setStudentId(booking.getStudentId());
+        dto.setMuayThaiClassTracker(muayThaiClassTrackerServiceImp.convertToDto(booking.getMuayThaiClassTracker()));
+        return dto;
+    }
+
+    public  MuayThaiBooking convertToEntity(MuayThaiBookingDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        MuayThaiBooking booking = new MuayThaiBooking();
+        booking.setBookingId(dto.getBookingId());
+        booking.setStudentId(dto.getStudentId());
+        booking.setMuayThaiClassTracker(muayThaiClassTrackerServiceImp.convertToEntity(dto.getMuayThaiClassTracker()));
+        return booking;
+    }
+
+
+
 }

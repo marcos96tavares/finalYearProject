@@ -10,4 +10,6 @@ import java.util.List;
 public interface MuayThaiBookRepository extends JpaRepository<MuayThaiBooking, Long> {
 
 
+    List<MuayThaiBooking> findAllByStudentId(Long studentId);
+    
 }

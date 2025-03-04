@@ -103,7 +103,7 @@ public class PaymentServiceImpl implements PaymentService {
      * @param dto the PaymentDto object containing payment details
      * @return a Payment entity populated with the data from the provided PaymentDto
      */
-    private Payment convertToEntity(PaymentDto dto) {
+    public Payment convertToEntity(PaymentDto dto) {
         Payment payment = new Payment();
         payment.setPaymentCardNumber(dto.getPaymentCardNumberDto());
         payment.setPaymentExpiredDate(dto.getPaymentExpiredDateDto());
@@ -120,7 +120,7 @@ public class PaymentServiceImpl implements PaymentService {
      * @param payment the Payment entity to be converted
      * @return the converted PaymentDto object
      */
-    private PaymentDto convertToDto(Payment payment) {
+    public PaymentDto convertToDto(Payment payment) {
         return new PaymentDto(
                 payment.getPaymentId(),
                 payment.getPaymentCardNumber(),

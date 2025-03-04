@@ -17,5 +17,5 @@ public class MuayThaiBookingDto {
 
     private Long bookingId;
     private Long studentId;
-    private MuayThaiClassTracker muayThaiClassTracker;
+    private MuayThaiClassTrackerDto muayThaiClassTracker;
 }

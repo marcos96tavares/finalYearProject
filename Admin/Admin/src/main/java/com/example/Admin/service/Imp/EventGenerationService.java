@@ -11,6 +11,7 @@ import com.example.Admin.repository.MuayThaiClassRepository;
 import com.example.Admin.repository.MuayThaiClassTrackerRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -68,21 +69,37 @@ public class EventGenerationService {
      */
     @Transactional
     public void generateEvents() {
-
         List<MuayThaiClass> allClasses = muayThaiClassRepository.findAll();
-        List<BankHolidayDays> getAllBankHolidayEvents = bankHolidayRepository.findAll();
 
-        // Get next week's Monday as a reference point
+        // Fetch bank holidays once and store them in a Set for quick lookup
+        Set<LocalDate> bankHolidays = bankHolidayRepository.findAll()
+                .stream()
+                .map(BankHolidayDays::getDate)
+                .collect(Collectors.toSet());
+
+        if (bankHolidays.isEmpty()) {
+            getBankHolidayDays(); // Fetch if no bank holidays exist
+            bankHolidays = bankHolidayRepository.findAll()
+                    .stream()
+                    .map(BankHolidayDays::getDate)
+                    .collect(Collectors.toSet());
+        }
+
+        // Get next week's Monday
         LocalDate nextWeekStart = LocalDate.now().plusWeeks(1).with(DayOfWeek.MONDAY);
 
         for (MuayThaiClass muayThaiClass : allClasses) {
-            // Determine next week's event date for this class
+
             LocalDate nextEventDate = nextWeekStart.with(muayThaiClass.getWeekDays());
 
-            // Check if this class already has a tracker for next week
+            // Skip if it's a bank holiday
+            if (bankHolidays.contains(nextEventDate)) {
+                continue;
+            }
+
+            // Check if tracker already exists
             boolean exists = muayThaiClassTrackerRepository.existsByMuayThaiClassAndEventDate(muayThaiClass, nextEventDate);
             if (!exists) {
-                // Create a new tracker for the next week
                 MuayThaiClassTracker newTracker = new MuayThaiClassTracker();
                 newTracker.setMuayThaiClass(muayThaiClass);
                 newTracker.setEventDate(nextEventDate);
@@ -90,7 +107,6 @@ public class EventGenerationService {
                 newTracker.setNumberPeopleOnWaitList(0);
                 newTracker.setNumberPeopleDidNotAttendClass(0);
 
-                // Save to database
                 muayThaiClassTrackerRepository.save(newTracker);
             }
         }
@@ -138,5 +154,12 @@ public class EventGenerationService {
        bankHolidayRepository.saveAll(filteredHolidays);}
 
 
+    }
+
+
+    // Automatically runs every Sunday at midnight
+    @Scheduled(cron = "0 0 0 * * SUN")
+    public void scheduledEventGeneration() {
+        generateEvents();
     }
 }
