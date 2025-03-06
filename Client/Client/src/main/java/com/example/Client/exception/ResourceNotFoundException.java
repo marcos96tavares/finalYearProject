@@ -1,22 +1,22 @@
 package com.example.Client.exception;
 
-
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+@Getter
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException {
 
+    private final String resourceName;
+    private final String fieldName;
+    private final Long fieldValue;
 
-
-    private String resourceName;
-    private String fileName;
-    private Long fieldValue;
-
-    public ResourceNotFoundException(String resourceName, String fileName, Long fieldValue) {
-        super(String.format("%s not found with %s : %s", resourceName, fileName, fieldValue));
+    public ResourceNotFoundException(String resourceName, String fieldName, Long fieldValue) {
+        super(String.format("%s not found with %s : %s", resourceName, fieldName, fieldValue));
         this.resourceName = resourceName;
-        this.fileName = fileName;
+        this.fieldName = fieldName;
         this.fieldValue = fieldValue;
     }
+
 }

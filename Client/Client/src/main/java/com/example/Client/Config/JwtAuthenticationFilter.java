@@ -34,8 +34,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        // Skip JWT authentication for login requests
+        if (request.getRequestURI().startsWith("/api/login")) {
+            System.out.println("Skipping JWT authentication for login request.");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = getTokenFromRequest(request);
-        if(StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
+        if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             String username = jwtTokenProvider.getUsername(token);
             UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
 
@@ -50,6 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
 
 
     private String getTokenFromRequest(HttpServletRequest request) {

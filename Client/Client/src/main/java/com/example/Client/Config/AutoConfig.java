@@ -50,8 +50,8 @@ public class AutoConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/login/user", "api/login/admin", "api/membership").permitAll() // Allow login for both
-                        .requestMatchers("/api/videos").hasAuthority("ROLE_USER") // Only allow authenticated users (not admins)
+                        .requestMatchers("/api/login/**", "/api/membership").permitAll() // Allow login for both
+                        .requestMatchers("/api/videos", "/api/ai").hasAuthority("ROLE_USER") // Only allow authenticated users (not admins)
                         .anyRequest().permitAll() // Block everything else
                 ).exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)).sessionManagement(session -> {
