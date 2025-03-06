@@ -67,8 +67,8 @@ public class Config {
         ContentRetriever contentRetriever = EmbeddingStoreContentRetriever.builder()
                 .embeddingStore(embeddingStore())
                 .embeddingModel(embeddingModel())
-                .maxResults(5)
-                .minScore(0.5) // Adjusted for better retrieval
+                .maxResults(10)
+                .minScore(0.6) // Adjusted for better retrieval
                 .build();
 
         return AiServices.builder(RAGAssistant.class)
@@ -81,6 +81,7 @@ public class Config {
                 .chatMemoryProvider(x -> MessageWindowChatMemory.withMaxMessages(10))
                 .build();
     }
+
 
 
 

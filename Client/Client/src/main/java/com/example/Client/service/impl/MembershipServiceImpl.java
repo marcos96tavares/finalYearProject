@@ -73,19 +73,27 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public MembershipDto createMembership(MembershipDto membershipDto) {
 
-       if (userRepository.existsByEmail(membershipDto.getUserId().getEmailDto())){
-           throw new EmailAlreadyExistsException("Email already exists");
-       }
-        UserDto userDto = userService.createUser(membershipDto.getUserId());
-        PaymentDto paymentDto = paymentService.createPayment(membershipDto.getPaymentId());
+        if (userRepository.existsByEmail(membershipDto.getUserId().getEmailDto())) {
+            throw new EmailAlreadyExistsException("Email already exists");
+        }
 
-        membershipDto.setUserId(userDto);
-        membershipDto.setPaymentId(paymentDto);
+        // Save User first
+        User user = userService.createUser(membershipDto.getUserId());
 
+        // Save Payment and ensure it has an ID
+        Payment payment = paymentService.createPayment(membershipDto.getPaymentId());
+
+
+        // Assign saved user and payment to membership
+
+        // Convert to entity and save
         Membership membership = convertToEntity(membershipDto);
+        membership.setUserId(user);
+        membership.setPaymentId(payment);
 
         return convertToDto(membershipRepository.save(membership));
     }
+
 
 
 

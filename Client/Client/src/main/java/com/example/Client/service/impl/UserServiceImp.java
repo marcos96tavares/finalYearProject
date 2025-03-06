@@ -2,6 +2,7 @@ package com.example.Client.service.impl;
 
 import com.example.Client.dto.UserDto;
 import com.example.Client.entity.User;
+import com.example.Client.exception.EmailAlreadyExistsException;
 import com.example.Client.exception.ResourceNotFoundException;
 import com.example.Client.repository.UserRepository;
 import com.example.Client.service.UserService;
@@ -39,10 +40,10 @@ public class UserServiceImp implements UserService {
      * @return the created user as a data transfer object
      */
     @Override
-    public UserDto createUser(UserDto userDto) {
+    public User createUser(UserDto userDto) {
 
         User user = convertToEntity(userDto);
-        return convertToDto(userRepository.save(user));
+        return userRepository.save(user);
     }
 
     /**
@@ -103,6 +104,14 @@ public class UserServiceImp implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public UserDto getUserByEmail(String email) {
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new EmailAlreadyExistsException("Wrong Email"));
+
+        return convertToDto(user);
+    }
+
 
     /**
      * Converts a UserDto object into a User entity.
@@ -112,6 +121,7 @@ public class UserServiceImp implements UserService {
      */
     public User convertToEntity(UserDto userDto) {
         User user = new User();
+        user.setUserId(userDto.getUserDtoId());
         user.setFirstName(userDto.getFirstNameDto());
         user.setLastName(userDto.getLastNameDto());
         user.setEmail(userDto.getEmailDto());

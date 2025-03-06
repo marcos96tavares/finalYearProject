@@ -4,15 +4,14 @@ package com.example.Client.controller;
 import com.example.Client.dto.JwtAuthResponse;
 import com.example.Client.dto.LoginDto;
 import com.example.Client.service.AuthSerive;
+import jakarta.ws.rs.OPTIONS;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/login")
 public class AuthController {

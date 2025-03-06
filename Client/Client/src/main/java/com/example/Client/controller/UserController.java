@@ -4,6 +4,7 @@ package com.example.Client.controller;
 import com.example.Client.dto.LoginDto;
 import com.example.Client.dto.UserDto;
 import com.example.Client.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,11 +26,19 @@ public class UserController {
 
     }
 
-    @PostMapping
-    public UserDto createUser(@RequestBody UserDto userDto) {
-        return userService.createUser(userDto);
-    }
+//    @PostMapping
+//    public UserDto createUser(@RequestBody UserDto userDto) {
+//        return userService.createUser(userDto);
+//    }
+//
 
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
+
+        UserDto userDto = userService.getUserByEmail(email);
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
+    }
 
 
     @PutMapping("/{id}")

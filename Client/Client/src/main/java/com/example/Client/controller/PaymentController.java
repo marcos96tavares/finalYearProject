@@ -19,10 +19,10 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    @PostMapping
-    public PaymentDto createPayment(@RequestBody PaymentDto paymentDto) {
-        return paymentService.createPayment(paymentDto);
-    }
+//    @PostMapping
+//    public PaymentDto createPayment(@RequestBody PaymentDto paymentDto) {
+//        return paymentService.createPayment(paymentDto);
+//    }
 
     @PutMapping("/{id}")
     public PaymentDto updatePayment(@PathVariable Long id, @RequestBody PaymentDto paymentDto) {

@@ -20,6 +20,7 @@ public class PaymentDto {
     private Long paymentIdDo;
     private long paymentCardNumberDto;
     private Date paymentExpiredDateDto;
+    private String paymentExpiryDateDtoString;
     private int paymentCvvDto;
     private String paymentNameDto;
     private String paymentAddressDto;

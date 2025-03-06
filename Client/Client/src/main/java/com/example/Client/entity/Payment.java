@@ -27,7 +27,7 @@ public class Payment {
     private Long paymentId;
     /**
      * Represents the card number associated with a payment transaction.
-     * Typically a numeric value identifying the credit or debit card
+     *  a numeric value identifying the credit or debit card
      * used during the payment process.
      */
     private long paymentCardNumber;
@@ -84,6 +84,8 @@ public class Payment {
         SimpleDateFormat formatter = new SimpleDateFormat("MM/yy");
         this.paymentDate = formatter.parse(formattedDate);
     }
+
+    private String paymentExpiryDateDtoString;
 
     public Long getPaymentId() {
         return paymentId;

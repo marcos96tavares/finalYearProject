@@ -12,6 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
@@ -21,7 +22,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 @SpringBootApplication
-
+@EnableScheduling
 public class AdminApplication {
 
     public static void main(String[] args) {SpringApplication.run(AdminApplication.class, args);}

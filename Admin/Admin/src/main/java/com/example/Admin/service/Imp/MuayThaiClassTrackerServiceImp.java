@@ -1,16 +1,16 @@
 package com.example.Admin.service.Imp;
 
+import com.example.Admin.dto.MuayThaiClassDto;
 import com.example.Admin.dto.MuayThaiClassTrackerDto;
 import com.example.Admin.entity.MuayThaiClass;
 import com.example.Admin.entity.MuayThaiClassTracker;
 import com.example.Admin.exception.ResourceNotFoundException;
-import com.example.Admin.repository.MuayThaiClassRepository;
 import com.example.Admin.repository.MuayThaiClassTrackerRepository;
 import com.example.Admin.service.MuayThaiClassTrackerService;
-import org.apache.logging.log4j.util.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,12 +50,12 @@ public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerServi
      * Creates a Muay Thai class tracker with preset attendance, waitlist, and non-attendance values set to zero.
      * Associates the tracker with the specified Muay Thai class ID.
      *
-     * @param trackerDto The data transfer object containing tracker details.
+     *  The data transfer object containing tracker details.
      * @param muayThaiClassId The ID of the Muay Thai class to associate with the tracker.
      * @return A data transfer object representing the created Muay Thai class tracker.
      */
     @Override
-    public MuayThaiClassTrackerDto createClassTracker(MuayThaiClassTrackerDto trackerDto, Long muayThaiClassId) {
+    public MuayThaiClassTrackerDto createClassTracker(Long muayThaiClassId) {
 
         MuayThaiClass muayThaiClass = muayThaiClassServiceImp.getTheClassById(muayThaiClassId);
 
@@ -157,34 +157,36 @@ public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerServi
 
     @Override
     public Map<DayOfWeek, List<MuayThaiClassTrackerDto>> getClassListTrackersByDay() {
-
         List<MuayThaiClassTracker> muayThaiClassTrackers = trackerRepository.findAll();
 
-        // Sort classes by event date
-        muayThaiClassTrackers = muayThaiClassTrackers.stream()
-                .sorted(Comparator.comparing(MuayThaiClassTracker::getEventDate))
-                .toList(); // Store the sorted list
+        // Get the current week's Monday (as the start reference point)
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
 
-        // Group classes by day of the week
-        Map<DayOfWeek, List<MuayThaiClassTracker>> map = new HashMap<>();
+        // Filter only future events (including this week)
+        List<MuayThaiClassTracker> futureTrackers = muayThaiClassTrackers.stream()
+                .filter(tracker -> !tracker.getEventDate().isBefore(startOfWeek)) // Exclude past events
+                .sorted(Comparator.comparing(MuayThaiClassTracker::getEventDate)) // Sort by event date
+                .toList();
 
-        for (MuayThaiClassTracker tracker : muayThaiClassTrackers) {
+        // Group by day of the week
+        Map<DayOfWeek, List<MuayThaiClassTracker>> groupedByDay = new HashMap<>();
+        for (MuayThaiClassTracker tracker : futureTrackers) {
             DayOfWeek day = tracker.getMuayThaiClass().getWeekDays();
-
-            // Add tracker to the existing list or create a new one
-            map.computeIfAbsent(day, k -> new ArrayList<>()).add(tracker);
+            groupedByDay.computeIfAbsent(day, k -> new ArrayList<>()).add(tracker);
         }
 
-        // Convert values to DTOs
-        return map.entrySet().stream()
+        // Convert to DTOs and return
+        return groupedByDay.entrySet().stream()
                 .collect(Collectors.toMap(
-                        Map.Entry::getKey, // Keep the same DayOfWeek key
+                        Map.Entry::getKey, // Keep DayOfWeek as the key
                         entry -> entry.getValue().stream()
-                                .sorted(Comparator.comparing(t -> t.getMuayThaiClass().getClassTimeStart())) // Sort by class start time
+                                .sorted(Comparator.comparing(t -> t.getMuayThaiClass().getClassTimeStart())) // Sort by start time
                                 .map(this::convertToDto) // Convert to DTO
                                 .toList()
                 ));
     }
+
 
 
 
@@ -224,6 +226,16 @@ public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerServi
         }
 
         return tracker;
+    }
+
+
+    public void generateMuayThaiClassTracker() {
+
+        List<MuayThaiClassDto> trackers = muayThaiClassServiceImp.getListOfMuaythaiclasses();
+
+        for (MuayThaiClassDto tracker : trackers) {
+            createClassTracker(tracker.getClassIdDto());
+        }
     }
 
 

@@ -8,6 +8,8 @@ import com.example.Client.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,9 +39,9 @@ public class PaymentServiceImpl implements PaymentService {
      * @return A PaymentDto representing the newly created payment after being saved in the repository.
      */
     @Override
-    public PaymentDto createPayment(PaymentDto paymentDto) {
+    public Payment createPayment(PaymentDto paymentDto) {
         Payment payment = convertToEntity(paymentDto);
-        return convertToDto(paymentRepository.save(payment));
+        return paymentRepository.save(payment);
     }
 
     /**
@@ -105,12 +107,14 @@ public class PaymentServiceImpl implements PaymentService {
      */
     public Payment convertToEntity(PaymentDto dto) {
         Payment payment = new Payment();
+        payment.setPaymentId(dto.getPaymentIdDo());
         payment.setPaymentCardNumber(dto.getPaymentCardNumberDto());
-        payment.setPaymentExpiredDate(dto.getPaymentExpiredDateDto());
+        payment.setPaymentExpiredDate(setTheExpirationDate());
         payment.setPaymentCvv(dto.getPaymentCvvDto());
         payment.setPaymentName(dto.getPaymentNameDto());
         payment.setPaymentAddress(dto.getPaymentAddressDto());
         payment.setPaymentAmount(dto.getPaymentAmountDto());
+        payment.setPaymentExpiryDateDtoString(dto.getPaymentExpiryDateDtoString());
         return payment;
     }
 
@@ -125,11 +129,22 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.getPaymentId(),
                 payment.getPaymentCardNumber(),
                 payment.getPaymentExpiredDate(),
+                payment.getPaymentExpiryDateDtoString(),
                 payment.getPaymentCvv(),
                 payment.getPaymentName(),
                 payment.getPaymentAddress(),
                 payment.getPaymentAmount()
         );
+    }
+
+
+
+    private Date setTheExpirationDate() {
+        Date expirationDate = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(expirationDate);
+        calendar.add(Calendar.DAY_OF_YEAR, 30);
+        return calendar.getTime();
     }
 
 }

@@ -29,14 +29,14 @@ public class Membership {
      * This field establishes a one-to-one relationship with the {@link User} entity,
      * identifying the user associated with the specific membership.
      */
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     private User userId;
     /**
      * Represents the payment information associated with a membership.
      * This field establishes a one-to-one relationship between Membership
      * and Payment entities, linking a Membership record to a specific Payment.
      */
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     private Payment paymentId;
 
     /**

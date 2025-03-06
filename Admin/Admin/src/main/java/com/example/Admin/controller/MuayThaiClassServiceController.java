@@ -25,8 +25,8 @@ public class MuayThaiClassServiceController {
     }
 
     @PostMapping("/{classId}")
-    public MuayThaiClassTrackerDto create(@RequestBody MuayThaiClassTrackerDto dto, @PathVariable Long classId) {
-        return trackerService.createClassTracker(dto, classId);
+    public MuayThaiClassTrackerDto create( @PathVariable Long classId) {
+        return trackerService.createClassTracker( classId);
     }
 
 

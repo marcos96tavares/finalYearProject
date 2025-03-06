@@ -15,6 +15,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 /**
  * Configuration class for setting up security in the application.
@@ -49,19 +53,40 @@ public class AutoConfig {
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())  // ✅ Enable CORS properly
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login/**", "/api/membership").permitAll() // Allow login for both
-                        .requestMatchers("/api/videos", "/api/ai").hasAuthority("ROLE_USER") // Only allow authenticated users (not admins)
-                        .anyRequest().permitAll() // Block everything else
-                ).exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)).sessionManagement(session -> {
-                            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-                });
-
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // ✅ Allow OPTIONS globally
+                        .requestMatchers("/api/login/**", "/api/membership").permitAll() // Allow login
+                        .requestMatchers("/api/videos", "/api/ai").hasAuthority("ROLE_USER")
+                        .requestMatchers("/api/classes/**").hasAuthority("ROLE_ADMIN")
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                );
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
+
+
+    @Bean
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:3000")); // Replace "*" with explicit URLs
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true); // ✅ Ensure credentials are allowed only with specific origins
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+
 
 
 
