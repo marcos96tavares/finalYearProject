@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/booking")
 public class MuayThaiBookingController {
@@ -22,12 +22,18 @@ public class MuayThaiBookingController {
 
 
 
-    @PostMapping
-    public ResponseEntity<MuayThaiBooking> createBooking(@RequestBody MuayThaiBookingDto bookingDto) {
-        MuayThaiBooking newBooking = bookingService.createBooking(bookingDto);
-        return new ResponseEntity<>(newBooking, HttpStatus.CREATED);
+    @PostMapping("/book/{studentId}/{trackId}")
+    public ResponseEntity<MuayThaiBooking> createBooking(@PathVariable Long studentId, @PathVariable Long trackId) {
+        MuayThaiBooking booked = bookingService.createBooking(studentId, trackId);
+
+        return new ResponseEntity<>(booked, HttpStatus.CREATED);
     }
 
+    @GetMapping("/check/{studentId}/{trackerId}")
+    public ResponseEntity<Boolean> checkBooking(@PathVariable Long studentId, @PathVariable Long trackerId) {
+        boolean isBooked = bookingService.hasUserBookedClass(studentId, trackerId);
+        return ResponseEntity.ok(isBooked);
+    }
 
     @GetMapping
     public ResponseEntity<List<MuayThaiBooking>> getAllBookings() {
@@ -39,6 +45,14 @@ public class MuayThaiBookingController {
     @DeleteMapping("/{bookingId}")
     public ResponseEntity<Void> deleteBooking(@PathVariable Long bookingId) {
         bookingService.deleteBooking(bookingId);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("delete/{studentId}/{trackerId}")
+    public ResponseEntity<Void> deleteBooking(@PathVariable Long studentId, @PathVariable Long trackerId) {
+
+        bookingService.deleteBooking(studentId, trackerId);
         return ResponseEntity.noContent().build();
     }
 }

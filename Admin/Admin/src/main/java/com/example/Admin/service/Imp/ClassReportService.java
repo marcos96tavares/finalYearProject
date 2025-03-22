@@ -45,7 +45,7 @@ public class ClassReportService implements MemberData {
     public int totalOfMembers() {
 
         int size = webClient.get()
-                .uri("http://localhost:8081/memberships/getUserSize")
+                .uri("http://localhost:8081/api/membership/get_size")
                 .retrieve()
                 .bodyToMono(Integer.class)
                 .blockOptional() // Wrap in Optional

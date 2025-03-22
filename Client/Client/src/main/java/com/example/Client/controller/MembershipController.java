@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/membership")
 
@@ -50,6 +51,6 @@ public class MembershipController {
 
     @GetMapping("/get_size")
     public Integer getUserSize() {
-        return membershipService.getAllMemberships().size();
+        return   membershipService.getAllMemberships().size();
     }
 }

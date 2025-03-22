@@ -9,9 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
 import java.util.List;
-
 @RestController
+@CrossOrigin("*")
 @RequestMapping("api/classes")
 public class MuayThaiClassController {
 
@@ -35,10 +36,7 @@ public class MuayThaiClassController {
 
     @PutMapping("/{id}")
     public ResponseEntity<MuayThaiClassDto> updateClass(@PathVariable Long id, @RequestBody MuayThaiClassDto muayThaiClassDto) {
-        if (!id.equals(muayThaiClassDto.getClassIdDto())) {
-            return ResponseEntity.badRequest().build();
-        }
-        MuayThaiClassDto updatedClass = muayThaiClassService.updateMuayThaiClass(muayThaiClassDto);
+        MuayThaiClassDto updatedClass = muayThaiClassService.updateMuayThaiClass(muayThaiClassDto, id);
         return new ResponseEntity<>(updatedClass, HttpStatus.OK);
 
     }
@@ -57,5 +55,13 @@ public class MuayThaiClassController {
         return new ResponseEntity<>(classes, HttpStatus.OK);
 
 
+    }
+
+
+    @GetMapping("/{day}")
+    public ResponseEntity<List<MuayThaiClassDto>> getClassWeekDays(@PathVariable String day) {
+
+        List<MuayThaiClassDto> classes = muayThaiClassService.getListOfMuayThaiClassesByDay(day);
+        return new ResponseEntity<>(classes, HttpStatus.OK);
     }
 }

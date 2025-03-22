@@ -11,5 +11,8 @@ public interface MuayThaiBookRepository extends JpaRepository<MuayThaiBooking, L
 
 
     List<MuayThaiBooking> findAllByStudentId(Long studentId);
-    
+
+    boolean existsByStudentIdAndMuayThaiClassTracker_ClassManagerId(Long studentId, Long trackId);
+
+    MuayThaiBooking findByStudentIdAndMuayThaiClassTracker_ClassManagerId(Long studentId, Long trackId);
 }

@@ -6,6 +6,7 @@ import com.example.LLM.dto.ChatRequest;
 import com.example.LLM.dto.ChatResponse;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/ai")
 public class GenerativeController {

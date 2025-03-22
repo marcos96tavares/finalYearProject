@@ -15,8 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 @Entity
-public class BankHolidayDays
-{
+public class BankHolidayDays {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

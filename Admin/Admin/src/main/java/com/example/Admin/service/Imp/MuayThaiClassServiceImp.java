@@ -8,6 +8,7 @@ import com.example.Admin.repository.MuayThaiClassRepository;
 import com.example.Admin.service.MuayThaiClassService;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,13 +76,19 @@ public class MuayThaiClassServiceImp implements MuayThaiClassService {
      * @return a DTO representing the updated Muay Thai class.
      */
     @Override
-    public MuayThaiClassDto updateMuayThaiClass(MuayThaiClassDto muayThaiClassDto) {
+    public MuayThaiClassDto updateMuayThaiClass(MuayThaiClassDto muayThaiClassDto, Long classId) {
 
-        Long getTheId = muayThaiClassDto.getClassIdDto();
-
-        MuayThaiClass muayThaiClass = muayThaiClassRepository.findById(getTheId).orElseThrow(
-                () -> new ResourceNotFoundException("Muaythai", "id", getTheId)
+        MuayThaiClass muayThaiClass = muayThaiClassRepository.findById(classId).orElseThrow(
+                () -> new ResourceNotFoundException("Muaythai", "id", classId)
         );
+
+        muayThaiClass.setClassName(muayThaiClassDto.getClassNameDto());
+        muayThaiClass.setClassCapacity(muayThaiClassDto.getClassCapacityDto());
+        muayThaiClass.setClassTimeStart(muayThaiClassDto.getClassTimeStarDto());
+        muayThaiClass.setClassTimeEnd(muayThaiClassDto.getClassTimeEndDto());
+        muayThaiClass.setWeekDays(muayThaiClassDto.getWeekDaysDto());
+
+        muayThaiClassRepository.save(muayThaiClass);
 
         return muayThaiClassToDto(muayThaiClass);
     }
@@ -130,6 +137,21 @@ public class MuayThaiClassServiceImp implements MuayThaiClassService {
                 .collect(Collectors.toList());
 
 
+    }
+
+
+
+    @Override
+    public List<MuayThaiClassDto> getListOfMuayThaiClassesByDay(String day) {
+
+
+        DayOfWeek dayOfWeek = DayOfWeek.valueOf(day);
+
+        List<MuayThaiClass> listofMuaythai = muayThaiClassRepository.findAllByWeekDays(dayOfWeek);
+
+        return listofMuaythai.stream()
+                .map(this::muayThaiClassToDto)
+                .toList();
     }
 
 

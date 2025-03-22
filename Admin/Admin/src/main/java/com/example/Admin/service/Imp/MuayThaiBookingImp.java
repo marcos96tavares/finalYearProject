@@ -3,6 +3,7 @@ package com.example.Admin.service.Imp;
 import com.example.Admin.dto.MuayThaiBookingDto;
 import com.example.Admin.dto.MuayThaiClassTrackerDto;
 import com.example.Admin.entity.MuayThaiBooking;
+import com.example.Admin.entity.MuayThaiClass;
 import com.example.Admin.entity.MuayThaiClassTracker;
 import com.example.Admin.exception.ResourceNotFoundException;
 import com.example.Admin.repository.MuayThaiBookRepository;
@@ -53,19 +54,20 @@ public class MuayThaiBookingImp implements MuayThaiBookingService {
      * Creates a new Muay Thai booking based on the provided booking data transfer object (DTO).
      * Retrieves the associated class tracker, maps the booking details, and saves the booking.
      *
-     * @param bookingDto the data transfer object containing details for the Muay Thai booking,
+    Thai booking,
      *                   including student ID and associated class tracker information.
      * @return the newly created Muay Thai booking after being saved.
      * @throws RuntimeException if the specified class tracker is not found.
      */
     @Override
-    public MuayThaiBooking createBooking(MuayThaiBookingDto bookingDto) {
-        MuayThaiClassTracker tracker = muayThaiClassTrackerRepository.findById(bookingDto.getMuayThaiClassTracker().getClassTrackerIdDto())
-                .orElseThrow(() -> new ResourceNotFoundException("MuayThaiTracker" ,"id", bookingDto.getMuayThaiClassTracker().getClassTrackerIdDto()));
+    public MuayThaiBooking createBooking(Long studentId, Long MuayThaiClassId) {
+
+
+        MuayThaiClassTracker MuayThaiClassTracker = muayThaiClassTrackerRepository.findById(MuayThaiClassId).get();
 
         MuayThaiBooking booking = new MuayThaiBooking();
-        booking.setStudentId(bookingDto.getStudentId());
-        booking.setMuayThaiClassTracker(tracker);
+        booking.setStudentId(studentId);
+        booking.setMuayThaiClassTracker(MuayThaiClassTracker);
 
         return muayThaiBookingService.save(booking);
     }
@@ -103,6 +105,23 @@ public class MuayThaiBookingImp implements MuayThaiBookingService {
 
 
 
+    }
+
+    @Override
+    public MuayThaiBooking getBooking(Long bookingId) {
+        return muayThaiBookingService.findById(bookingId).get();
+    }
+
+    @Override
+    public boolean hasUserBookedClass(Long studentId, Long MuayThaiClassId) {
+        return muayThaiBookingService.existsByStudentIdAndMuayThaiClassTracker_ClassManagerId(studentId, MuayThaiClassId);
+    }
+
+    @Override
+    public void deleteBooking(Long studendId, Long MuayThaiClassId) {
+
+        MuayThaiBooking muayThaiClass = muayThaiBookingService.findByStudentIdAndMuayThaiClassTracker_ClassManagerId(studendId, MuayThaiClassId);
+        muayThaiBookingService.delete(muayThaiClass);
     }
 
 

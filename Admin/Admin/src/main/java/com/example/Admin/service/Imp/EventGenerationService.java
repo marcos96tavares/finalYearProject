@@ -1,7 +1,9 @@
 package com.example.Admin.service.Imp;
 
 
-import com.example.Admin.dto.BankHolidayEvent;
+
+
+
 import com.example.Admin.dto.BankHolidayResponse;
 import com.example.Admin.entity.BankHolidayDays;
 import com.example.Admin.entity.MuayThaiClass;
@@ -15,8 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import javax.sound.midi.Soundbank;
-import java.beans.Transient;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
@@ -113,6 +114,57 @@ public class EventGenerationService {
     }
 
 
+    public void generateNextClassesByClassId(Long classId) {
+
+        MuayThaiClass muayThaiClass = muayThaiClassRepository.findById(classId).orElse(null);
+
+
+
+
+            Set<LocalDate> bankHolidays = bankHolidayRepository.findAll()
+                    .stream()
+                    .map(BankHolidayDays::getDate)
+                    .collect(Collectors.toSet());
+
+            if (bankHolidays.isEmpty()) {
+                getBankHolidayDays(); // Fetch if no bank holidays exist
+                bankHolidays = bankHolidayRepository.findAll()
+                        .stream()
+                        .map(BankHolidayDays::getDate)
+                        .collect(Collectors.toSet());
+            }
+
+
+        for (int i = 1; i <= 4; i++) {
+
+            LocalDate nextWeekStart = LocalDate.now().plusWeeks(i).with(DayOfWeek.MONDAY);
+            LocalDate nextEventDate = nextWeekStart.with(muayThaiClass.getWeekDays());
+
+            // Skip if it's a bank holiday
+            if (bankHolidays.contains(nextEventDate)) {
+                continue;
+            }
+            boolean exists = muayThaiClassTrackerRepository.existsByMuayThaiClassAndEventDate(muayThaiClass, nextEventDate);
+            if (!exists) {
+                MuayThaiClassTracker newTracker = new MuayThaiClassTracker();
+                newTracker.setMuayThaiClass(muayThaiClass);
+                newTracker.setEventDate(nextEventDate);
+                newTracker.setNumberPeopleAttendedClass(0);
+                newTracker.setNumberPeopleOnWaitList(0);
+                newTracker.setNumberPeopleDidNotAttendClass(0);
+
+                muayThaiClassTrackerRepository.save(newTracker);
+            }
+
+
+        }
+
+
+
+
+    }
+
+
     public void getBankHolidayDays() {
 
         List<BankHolidayDays> bankHolidayDayReposite = bankHolidayRepository.findAll();
@@ -162,4 +214,6 @@ public class EventGenerationService {
     public void scheduledEventGeneration() {
         generateEvents();
     }
-}
+
+
+  }

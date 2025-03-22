@@ -79,14 +79,16 @@ public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerServi
      * If the class is full, the attendee is added to the waitlist.
      *
      * @param trackerDtoId the data transfer object representing the tracker to be updated
-     * @param muayThaiClassId the ID of the Muay Thai class to which attendance is being added
+
      * @return the updated Muay Thai class tracker as a data transfer object
      * @throws RuntimeException if the class is at full capacity
      */
-    public MuayThaiClassTrackerDto addAttend(Long trackerDtoId, Long muayThaiClassId) {
+    @Override
+    public MuayThaiClassTrackerDto addAttend(Long trackerDtoId) {
 
-        MuayThaiClass muayThaiClass = muayThaiClassServiceImp.getTheClassById(muayThaiClassId);
-        MuayThaiClassTracker muayThaiClassTracker = trackerRepository.findById(trackerDtoId).orElseThrow(()->new ResourceNotFoundException("muaythai", "id", muayThaiClassId));
+
+        MuayThaiClassTracker muayThaiClassTracker = trackerRepository.findById(trackerDtoId).orElseThrow(()->new RuntimeException("MuayThaiClassTracker not found"));
+        MuayThaiClass muayThaiClass = muayThaiClassTracker.getMuayThaiClass();
         int classCapacity = muayThaiClass.getClassCapacity();
 
         if (classCapacity <= muayThaiClassTracker.getNumberPeopleAttendedClass()) {
@@ -110,6 +112,7 @@ public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerServi
      * @return the updated MuayThaiClassTrackerDto object after increasing the count of people
      *         who did not attend the specified class
      */
+    @Override
     public MuayThaiClassTrackerDto addNotAttend(Long trackerDtoId ) {
 
 
@@ -186,6 +189,19 @@ public class MuayThaiClassTrackerServiceImp implements MuayThaiClassTrackerServi
                                 .toList()
                 ));
     }
+
+
+    @Override
+    public List<MuayThaiClassTrackerDto> getAllMuayThaiClassTrackersByLocalDate(LocalDate startOfWeek) {
+
+        List<MuayThaiClassTracker> list = trackerRepository.findAllByEventDate(startOfWeek);
+
+        return list.stream()
+                .map(this::convertToDto)
+                .toList();
+
+
+   }
 
 
 

@@ -9,9 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/class-tracker")
 public class MuayThaiClassServiceController {
@@ -35,7 +37,7 @@ public class MuayThaiClassServiceController {
         trackerService.deleteClassTracker(id);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id-{id}")
     public MuayThaiClassTrackerDto getById(@PathVariable Long id) {
         return trackerService.getClassTrackerById(id);
     }
@@ -47,11 +49,11 @@ public class MuayThaiClassServiceController {
         return "Event Generated";
     }
 
-    @GetMapping( "/data")
-    public void generateNextBankHolidays() {
 
-        eventGenerationService.getBankHolidayDays();
 
+    @PostMapping("generate/{id}")
+    public void generateByClassId(@PathVariable Long id) {
+        eventGenerationService.generateNextClassesByClassId(id);
     }
 
     @GetMapping
@@ -68,5 +70,32 @@ public class MuayThaiClassServiceController {
 
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
+
+
+    @GetMapping("/{date}")
+    public ResponseEntity<List<MuayThaiClassTrackerDto>> getTrackersByDate(@PathVariable String date) {
+
+        LocalDate parsedDate = LocalDate.parse(date);
+        List<MuayThaiClassTrackerDto> tracker = trackerService.getAllMuayThaiClassTrackersByLocalDate(parsedDate);
+        return new ResponseEntity<>(tracker, HttpStatus.OK);
+
+    }
+
+
+
+    @PostMapping("add-attend/{trackerId}")
+    public String addAttened(@PathVariable("trackerId") Long trackerId) {
+
+        MuayThaiClassTrackerDto muayThaiClassTrackerDto  = trackerService.addAttend(trackerId);
+        return STR."Added attendment to tracker \{trackerId}";
+    }
+
+    @PostMapping("no-attend/{trackerId}")
+    public String noAttened(@PathVariable("trackerId") Long tracker) {
+
+        MuayThaiClassTrackerDto muayThaiClassTrackerDto  = trackerService.addNotAttend(tracker);
+        return STR."No Attended the class \{tracker}";
+    }
+
 
 }

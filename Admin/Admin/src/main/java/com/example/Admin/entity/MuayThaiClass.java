@@ -7,6 +7,7 @@ import java.util.List;
 
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -52,6 +53,7 @@ public class MuayThaiClass {
      *
      * The field is intended to specify or store the recurring day on which the class session takes place.
      */
+
     private DayOfWeek weekDays;
 
     /**
