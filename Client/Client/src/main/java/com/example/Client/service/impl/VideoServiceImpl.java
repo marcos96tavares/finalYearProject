@@ -1,5 +1,6 @@
 package com.example.Client.service.impl;
 
+import com.example.Client.dto.VideoResourceDto;
 import com.example.Client.entity.VideoResource;
 import com.example.Client.repository.VideoRepository;
 import com.example.Client.service.VideoService;
@@ -34,4 +35,25 @@ public class VideoServiceImpl implements VideoService {
     public List<VideoResource> getAllVedios() {
         return  videosRepositor.findAll();
     }
+
+    @Override
+    public VideoResourceDto createVedio(VideoResourceDto videoResource) {
+
+
+        VideoResource video = new VideoResource();
+        video.setVideoTitle(videoResource.getVideoTitle());
+        video.setVideoUrl(videoResource.getVideoUrl());
+        videosRepositor.save(video);
+        return videoResource;
+    }
+
+    @Override
+    public Boolean deleteVedio(Long videoId) {
+        videosRepositor.deleteById(videoId);
+        return true;
+    }
+
+
+
+
 }

@@ -1,13 +1,12 @@
 package com.example.Client.controller;
 
 
+import com.example.Client.dto.VideoResourceDto;
 import com.example.Client.entity.VideoResource;
 import com.example.Client.service.VideoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,4 +26,19 @@ private final VideoService videoService;
         List<VideoResource> listVideos = videoService.getAllVedios();
         return new ResponseEntity<>(listVideos, HttpStatus.OK);
     }
+
+
+    @PostMapping
+    public ResponseEntity<VideoResourceDto> createVideoResource(@RequestBody VideoResourceDto videoResource) {
+
+        videoService.createVedio(videoResource);
+        return new ResponseEntity<>(videoResource, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Boolean> deleteVideoResource(@PathVariable("id") Long videoId) {
+       var value = videoService.deleteVedio(videoId);
+        return new ResponseEntity<>(value, HttpStatus.OK);
+    }
+
 }

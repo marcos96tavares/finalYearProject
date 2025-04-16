@@ -38,27 +38,5 @@ public class VideoResource {
      */
     private String videoUrl;
 
-    public Long getVideoId() {
-        return videoId;
-    }
 
-    public void setVideoId(Long videoId) {
-        this.videoId = videoId;
-    }
-
-    public String getVideoTitle() {
-        return videoTitle;
-    }
-
-    public void setVideoTitle(String videoTitle) {
-        this.videoTitle = videoTitle;
-    }
-
-    public String getVideoUrl() {
-        return videoUrl;
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
-    }
 }
