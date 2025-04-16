@@ -1,9 +1,10 @@
 package com.example.Client.Config;
 
-import jakarta.ws.rs.HttpMethod;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -59,7 +60,9 @@ public class AutoConfig {
                         .requestMatchers("/api/login/**", "/api/membership").permitAll() // Allow login
                         .requestMatchers("/api/videos", "/api/ai").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/classes/**").hasAuthority("ROLE_ADMIN")
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/membership/**").permitAll()
+
+                        .anyRequest().permitAll()
                 )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))

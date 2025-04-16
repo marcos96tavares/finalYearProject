@@ -7,20 +7,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Api-Gateway" />
       </profile>
-      <profile name="Annotation profile for LLM" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
-        </processorPath>
-        <module name="LLM" />
-        <module name="Client" />
-      </profile>
-      <profile name="Annotation profile for Service-Register" enabled="true">
+      <profile name="Annotation profile for Admin" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -28,12 +16,15 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
         </processorPath>
         <module name="Admin" />
-        <module name="Service-Register" />
+        <module name="Client" />
+        <module name="LLM" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="Api-Gateway" target="21" />
       <module name="ChatBoat" target="21" />
       <module name="Security" target="21" />
+      <module name="Service-Register" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

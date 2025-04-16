@@ -18,7 +18,7 @@ import java.util.Date;
 public class PaymentDto {
 
     private Long paymentIdDo;
-    private long paymentCardNumberDto;
+    private String paymentCardNumberDto;
     private Date paymentExpiredDateDto;
     private String paymentExpiryDateDtoString;
     private int paymentCvvDto;

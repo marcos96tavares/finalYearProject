@@ -114,7 +114,7 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setPaymentName(dto.getPaymentNameDto());
         payment.setPaymentAddress(dto.getPaymentAddressDto());
         payment.setPaymentAmount(dto.getPaymentAmountDto());
-        payment.setPaymentExpiryDateDtoString(dto.getPaymentExpiryDateDtoString());
+
         return payment;
     }
 

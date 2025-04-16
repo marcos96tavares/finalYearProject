@@ -2,8 +2,10 @@ package com.example.Admin.controller;
 
 import com.example.Admin.dto.MuayThaiClassDto;
 import com.example.Admin.entity.MuayThaiClass;
+import com.example.Admin.service.Imp.EventGenerationService;
 import com.example.Admin.service.Imp.MuayThaiClassServiceImp;
 import com.example.Admin.service.MuayThaiClassService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,20 +20,19 @@ public class MuayThaiClassController {
 
 
     private MuayThaiClassService muayThaiClassService;
+    private final EventGenerationService eventGenerationService;
 
-    public MuayThaiClassController(MuayThaiClassService muayThaiClassService) {
+    public MuayThaiClassController(MuayThaiClassService muayThaiClassService, EventGenerationService eventGenerationService) {
         this.muayThaiClassService = muayThaiClassService;
+        this.eventGenerationService = eventGenerationService;
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<MuayThaiClass> createClass(@RequestBody MuayThaiClassDto muayThaiClassDto) {
         MuayThaiClass createdClass = muayThaiClassService.createMuayThaiClass(muayThaiClassDto);
-        if (createdClass != null) {
-            return new ResponseEntity<>(createdClass, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            // Indicates class couldn't be created due to overlap
-        }
+        eventGenerationService.generateNextClassesByClassId(createdClass.getClassId());
+        return new ResponseEntity<>(createdClass, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

@@ -6,6 +6,7 @@ import com.example.Admin.exception.ClassAlreadyExisteException;
 import com.example.Admin.exception.ResourceNotFoundException;
 import com.example.Admin.repository.MuayThaiClassRepository;
 import com.example.Admin.service.MuayThaiClassService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -25,6 +26,7 @@ public class MuayThaiClassServiceImp implements MuayThaiClassService {
      * persistence layer.
      */
     private MuayThaiClassRepository muayThaiClassRepository;
+    private EventGenerationService eventGenerationService;
 
     /**
      * Constructor for the MuayThaiClassServiceImp class.
@@ -43,6 +45,7 @@ public class MuayThaiClassServiceImp implements MuayThaiClassService {
      * @param muayThaiClassDto the data transfer object containing details of the Muay Thai class to be created
      * @return the created MuayThaiClass instance or an unmodified instance if the class creation fails due to scheduling conflicts
      */
+    @Transactional
     @Override
     public MuayThaiClass createMuayThaiClass(MuayThaiClassDto muayThaiClassDto) {
 
@@ -56,7 +59,9 @@ public class MuayThaiClassServiceImp implements MuayThaiClassService {
              muayThaiClass = dtoToMuayThaiClass(muayThaiClassDto);
 
             //save
-            muayThaiClassRepository.save(muayThaiClass);
+          muayThaiClassRepository.save(muayThaiClass);
+
+
 
         }else {
             throw new ClassAlreadyExisteException("Muay Thai Class Already Exists");

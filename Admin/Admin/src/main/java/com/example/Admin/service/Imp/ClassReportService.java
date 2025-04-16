@@ -43,17 +43,26 @@ public class ClassReportService implements MemberData {
      */
     @Override
     public int totalOfMembers() {
-
-        int size = webClient.get()
-                .uri("http://localhost:8081/api/membership/get_size")
-                .retrieve()
-                .bodyToMono(Integer.class)
-                .blockOptional() // Wrap in Optional
-                .orElse(0);
-
-
-        return size;
+        try {
+            return webClient.get()
+                    .uri("http://localhost:8081/api/membership/get_size")
+                    .retrieve()
+                    .onStatus(
+                            status -> status.is4xxClientError() || status.is5xxServerError(),
+                            clientResponse -> clientResponse
+                                    .bodyToMono(String.class)
+                                    .map(body -> new RuntimeException("Failed to fetch size: " + body))
+                    )
+                    .bodyToMono(Integer.class)
+                    .blockOptional()
+                    .orElse(0);
+        } catch (Exception e) {
+            // Log the exception if needed
+            System.err.println("Error fetching total members: " + e.getMessage());
+            return 0;
+        }
     }
+
 
     /**
      * Calculates the total number of active Muay Thai classes available.

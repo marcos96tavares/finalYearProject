@@ -10,7 +10,7 @@ import com.example.Client.exception.ResourceNotFoundException;
 import com.example.Client.repository.AdminRepository;
 import com.example.Client.repository.UserRepository;
 import com.example.Client.service.AuthSerive;
-import jakarta.ws.rs.BadRequestException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

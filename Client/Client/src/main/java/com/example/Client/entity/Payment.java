@@ -30,7 +30,7 @@ public class Payment {
      *  a numeric value identifying the credit or debit card
      * used during the payment process.
      */
-    private long paymentCardNumber;
+    private String paymentCardNumber;
     /**
      * Represents the expiration date of the payment card associated with the payment.
      * This field typically indicates the validity of the card and is used to prevent
@@ -74,80 +74,9 @@ public class Payment {
      */
     private double paymentAmount;
 
-    @Transient
-    public String getFormattedPaymentDate() {
-        SimpleDateFormat formatter = new SimpleDateFormat("MM/yy");
-        return formatter.format(paymentDate);
-    }
 
-    public void setFormattedPaymentDate(String formattedDate) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("MM/yy");
-        this.paymentDate = formatter.parse(formattedDate);
-    }
 
     private String paymentExpiryDateDtoString;
 
-    public Long getPaymentId() {
-        return paymentId;
-    }
 
-    public void setPaymentId(Long paymentId) {
-        this.paymentId = paymentId;
-    }
-
-    public long getPaymentCardNumber() {
-        return paymentCardNumber;
-    }
-
-    public void setPaymentCardNumber(long paymentCardNumber) {
-        this.paymentCardNumber = paymentCardNumber;
-    }
-
-    public Date getPaymentExpiredDate() {
-        return paymentExpiredDate;
-    }
-
-    public void setPaymentExpiredDate(Date paymentExpiredDate) {
-        this.paymentExpiredDate = paymentExpiredDate;
-    }
-
-    public int getPaymentCvv() {
-        return paymentCvv;
-    }
-
-    public void setPaymentCvv(int paymentCvv) {
-        this.paymentCvv = paymentCvv;
-    }
-
-    public String getPaymentName() {
-        return paymentName;
-    }
-
-    public void setPaymentName(String paymentName) {
-        this.paymentName = paymentName;
-    }
-
-    public String getPaymentAddress() {
-        return paymentAddress;
-    }
-
-    public void setPaymentAddress(String paymentAddress) {
-        this.paymentAddress = paymentAddress;
-    }
-
-    public Date getPaymentDate() {
-        return paymentDate;
-    }
-
-    public void setPaymentDate(Date paymentDate) {
-        this.paymentDate = paymentDate;
-    }
-
-    public double getPaymentAmount() {
-        return paymentAmount;
-    }
-
-    public void setPaymentAmount(double paymentAmount) {
-        this.paymentAmount = paymentAmount;
-    }
 }
