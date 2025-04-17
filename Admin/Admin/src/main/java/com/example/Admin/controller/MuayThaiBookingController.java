@@ -55,4 +55,11 @@ public class MuayThaiBookingController {
         bookingService.deleteBooking(studentId, trackerId);
         return ResponseEntity.noContent().build();
     }
+
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Boolean> deleteBookingById(@PathVariable("id") Long id) {
+        bookingService.deleteBooking(id);
+        return ResponseEntity.noContent().build();
+    }
 }

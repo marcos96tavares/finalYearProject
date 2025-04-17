@@ -1,11 +1,16 @@
 package com.example.Client.service.impl;
 
 import com.example.Client.dto.UserDto;
+import com.example.Client.entity.Membership;
 import com.example.Client.entity.User;
 import com.example.Client.exception.EmailAlreadyExistsException;
 import com.example.Client.exception.ResourceNotFoundException;
+import com.example.Client.service.ApiBookingCall;
+import com.example.Client.repository.MembershipRepository;
 import com.example.Client.repository.UserRepository;
 import com.example.Client.service.UserService;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,15 +27,21 @@ public class UserServiceImp implements UserService {
      */
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MembershipRepository membershipRepository;
 
+
+    private final   ApiBookingCall apiBookingCall;
     /**
      * Constructs a new instance of UserServiceImp with the specified UserRepository.
      *
      * @param userRepository the repository used to perform data operations for users
      */
-    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder, MembershipRepository membershipRepository, ApiBookingCall apiBookingCall) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.membershipRepository = membershipRepository;
+
+        this.apiBookingCall = apiBookingCall;
     }
 
     /**
@@ -73,8 +84,13 @@ public class UserServiceImp implements UserService {
      *
      * @param id the unique identifier of the user to be deleted
      */
+    @Transactional
     @Override
     public void deleteUser(Long id) {
+
+        Membership membership = membershipRepository.findMembershipByUserId_UserId(id);
+        membershipRepository.delete(membership);
+        apiBookingCall.deleteBooking(id);
         userRepository.deleteById(id);
     }
 

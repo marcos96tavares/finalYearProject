@@ -72,6 +72,11 @@ public class MuayThaiBookingImp implements MuayThaiBookingService {
         return muayThaiBookingService.save(booking);
     }
 
+
+    public boolean deleteAlltheBoolingByStudentId(Long studentId) {
+        return muayThaiBookingService.deleteAllByStudentId(studentId);
+    }
+
     /**
      * Retrieves all Muay Thai bookings from the data source.
      *
