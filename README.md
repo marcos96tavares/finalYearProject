@@ -47,10 +47,3 @@ backend/
 ├── llm-module/
 │   └── chatbot/
 └── service-registry/
-
-
-bash
-Copy
-Edit
-./mvnw spring-boot:run
-Ensure Eureka (service-registry) and api-gateway are running.
