@@ -1,0 +1,85 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Patotinho96@
+      MYSQL_DATABASE: db_admin
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pPatotinho96@"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      app-network:
+        aliases:
+          - mysql-db
+
+  admin-service:
+    image: appregister2025.azurecr.io/finalyearproject-admin-service:latest
+    container_name: admin-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/db_admin
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Patotinho96@
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+    networks:
+      - app-network
+
+  client-service:
+    image: appregister2025.azurecr.io/finalyearproject-client-service:latest
+    container_name: client-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/db_client
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Patotinho96@
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+    networks:
+    - app-network
+
+  llm-service:
+    image: appregister2025.azurecr.io/finalyearproject-llm-service:latest
+    container_name: llm-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - client-service
+    networks:
+    - app-network
+
+  react-frontend:
+    image: appregister2025.azurecr.io/finalyearproject-react-frontend:latest
+    container_name: react-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - admin-service
+      - client-service
+      - llm-service
+    networks:
+    - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:

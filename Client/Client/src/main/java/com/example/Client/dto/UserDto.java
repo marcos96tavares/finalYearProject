@@ -18,6 +18,7 @@ public class UserDto {
     private String lastNameDto;
     private String emailDto;
     private String passwordDto;
+    private Integer ageDto;
 
 
 

@@ -1,31 +1,20 @@
 package com.example.LLM.Service.Imp;
 
-
-import com.example.LLM.Service.APiUserCall;
 import com.example.LLM.dto.ChatRequest;
 import com.example.LLM.dto.UserDto;
-
+import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.document.splitter.DocumentSplitters;
-import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.embedding.EmbeddingModel;
-
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import dev.langchain4j.data.document.Document;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.loadDocument;
-
-
 @Component
-
 public class EmbeddingComponet {
-
 
     private UserApiCallService userApiCallService;
     private EmbeddingModel embeddingModel;
@@ -38,32 +27,33 @@ public class EmbeddingComponet {
     }
 
     private Document createDocument(ChatRequest chatRequest) {
-
-        Long userId = chatRequest.userId();
+        Long userId = Long.parseLong(chatRequest.userId());
         UserDto userDto = userApiCallService.searchForClient(userId);
 
         if (userDto == null) {
             throw new RuntimeException("User not found");
         }
 
+        // Improved document creation with explicit user personal info formatting
         String content = String.format(
-                "User Profile:\n- ID: %d\n- Name: %s\n- Email: %s\n- LastName: %s",
+                "User Profile Information:\n" +
+                        "- User ID: %d\n" +
+                        "- Name: %s\n" +
+                        "- Last Name: %s\n" +
+                        "- Email: %s\n" +
+                        "- Age: %d\n\n" +
+                        "IMPORTANT: When responding to this user, always address them as %s and consider their age of %d years when providing training advice.",
                 userDto.getUserDtoId(),
                 userDto.getFirstNameDto(),
+                userDto.getLastNameDto(),
                 userDto.getEmailDto(),
-                userDto.getLastNameDto() // Add more fields if needed
+                userDto.getAgeDto(),
+                userDto.getFirstNameDto(),
+                userDto.getAgeDto()
         );
+
         return Document.from(content);
-
     }
-
-
-
-
-
-
-
- // ✅ Import Metadata
 
     public void loadDocuments(ChatRequest chatRequest) {
         Document document = createDocument(chatRequest);
@@ -75,41 +65,24 @@ public class EmbeddingComponet {
 
         String userId = chatRequest.userId().toString();
 
-        // ✅ Convert Map to Metadata
-        Metadata metadata = Metadata.from(Map.of("ID", userId));
+        // Create metadata for the document
+        Map<String, String> metadataMap = new HashMap<>();
+        metadataMap.put("userId", userId);
+        metadataMap.put("documentType", "userProfile");
 
-        // ✅ Create document with metadata
+        Metadata metadata = Metadata.from(metadataMap);
         document = Document.from(document.text(), metadata);
 
         System.out.println("📌 Ingesting document for USER_ID " + userId + ": " + document.text());
 
         EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
-                .documentTransformer(document1 -> {
-                    document1.metadata().put("id", String.valueOf(chatRequest.userId())); // Use lowercase "id"
-                    return document1;
-                })
                 .documentSplitter(DocumentSplitters.recursive(200, 10))
                 .embeddingModel(embeddingModel)
                 .embeddingStore(embeddingStore)
                 .build();
 
-
         ingestor.ingest(document);
 
         System.out.println("✅ Stored Embeddings: " + embeddingStore.toString());
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

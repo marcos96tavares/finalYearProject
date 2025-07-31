@@ -14,4 +14,5 @@ public class UserDto {
     private String firstNameDto;
     private String lastNameDto;
     private String emailDto;
+    private Integer ageDto;
 }

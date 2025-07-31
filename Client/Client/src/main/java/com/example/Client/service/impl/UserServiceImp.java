@@ -141,6 +141,7 @@ public class UserServiceImp implements UserService {
         user.setFirstName(userDto.getFirstNameDto());
         user.setLastName(userDto.getLastNameDto());
         user.setEmail(userDto.getEmailDto());
+        user.setAge(userDto.getAgeDto());
         user.setPassword(passwordEncoder.encode(userDto.getPasswordDto()));
         return user;
     }
@@ -153,6 +154,6 @@ public class UserServiceImp implements UserService {
      * @return the converted UserDto object containing the mapped data
      */
     public UserDto convertToDto(User user) {
-        return new UserDto(user.getUserId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword());
+        return new UserDto(user.getUserId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword(), user.getAge());
     }
 }

@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Entity
+@Table(name = "[user]")
 public class User {
 
     /**
@@ -41,6 +42,9 @@ public class User {
     private String email;
 
     private String password;
+
+    @Column(name = "age", nullable = true)
+    private Integer age;
 
 
 

@@ -1,8 +1,6 @@
-package com.example.Admin.service.Imp;
+package com.example.Admin.service.imp;
 
 import com.example.Admin.dto.MuayThaiClassTrackerDto;
-import com.example.Admin.repository.MuayThaiClassRepository;
-import com.example.Admin.repository.MuayThaiClassTrackerRepository;
 import com.example.Admin.service.MemberData;
 import com.example.Admin.service.MuayThaiClassService;
 import com.example.Admin.service.MuayThaiClassTrackerService;
@@ -12,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.text.DecimalFormat;
 
 
 /**
@@ -92,7 +91,15 @@ public class ClassReportService implements MemberData {
                 .mapToInt(MuayThaiClassTrackerDto::getNumberPeopleAttendedClassDto)
                 .sum();
 
-        return totalClasses == 0 ? 0 : (double) attendedClasses / totalClasses * 100;
+        if (totalClasses == 0) {
+            return 0.00;
+        }
+
+        // Calculate the raw attendance rate
+        double rate = (double) attendedClasses / totalClasses * 100;
+
+        // Round to two decimal places
+        return Math.round(rate * 100.0) / 100.0;
     }
 
     /**

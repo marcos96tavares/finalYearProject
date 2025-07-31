@@ -1,4 +1,4 @@
-package com.example.Admin.service.Imp;
+package com.example.Admin.service.imp;
 
 import com.example.Admin.dto.MuayThaiClassDto;
 import com.example.Admin.dto.MuayThaiClassTrackerDto;

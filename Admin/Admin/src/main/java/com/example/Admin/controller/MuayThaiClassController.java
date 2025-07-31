@@ -2,16 +2,13 @@ package com.example.Admin.controller;
 
 import com.example.Admin.dto.MuayThaiClassDto;
 import com.example.Admin.entity.MuayThaiClass;
-import com.example.Admin.service.Imp.EventGenerationService;
-import com.example.Admin.service.Imp.MuayThaiClassServiceImp;
+import com.example.Admin.service.imp.EventGenerationService;
 import com.example.Admin.service.MuayThaiClassService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.DayOfWeek;
 import java.util.List;
 @RestController
 @CrossOrigin("*")

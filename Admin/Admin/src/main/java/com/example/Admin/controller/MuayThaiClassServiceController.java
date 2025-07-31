@@ -2,7 +2,7 @@ package com.example.Admin.controller;
 
 
 import com.example.Admin.dto.MuayThaiClassTrackerDto;
-import com.example.Admin.service.Imp.EventGenerationService;
+import com.example.Admin.service.imp.EventGenerationService;
 import com.example.Admin.service.MuayThaiClassTrackerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

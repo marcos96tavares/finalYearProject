@@ -1,4 +1,4 @@
-package com.example.Admin.service.Imp;
+package com.example.Admin.service.imp;
 
 
 
@@ -87,7 +87,7 @@ public class EventGenerationService {
         }
 
         // Get next week's Monday
-        LocalDate nextWeekStart = LocalDate.now().plusWeeks(1).with(DayOfWeek.MONDAY);
+        LocalDate nextWeekStart = LocalDate.now().plusWeeks(2).with(DayOfWeek.MONDAY);
 
         for (MuayThaiClass muayThaiClass : allClasses) {
 
@@ -135,7 +135,7 @@ public class EventGenerationService {
             }
 
 
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 1; i <= 8; i++) {
 
             LocalDate nextWeekStart = LocalDate.now().plusWeeks(i).with(DayOfWeek.MONDAY);
             LocalDate nextEventDate = nextWeekStart.with(muayThaiClass.getWeekDays());
